@@ -8,6 +8,7 @@ type MainPageProps = {
   year: number;
 }
 
+
 function MainPage({title, genre, year} : MainPageProps): JSX.Element {
   return (
     <React.Fragment>

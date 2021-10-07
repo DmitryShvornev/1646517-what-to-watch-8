@@ -28,11 +28,9 @@ function App({ title, genre, year }: AppProps): JSX.Element {
         <PrivateRoute
           exact
           path={AppRoute.MyList}
-          render={() => <SignIn />}
+          render={() => <MyList/>}
           authorizationStatus={AuthorizationStatus.NoAuth}
-        >
-          <MyList/>
-        </PrivateRoute>
+        />
         <Route exact path={AppRoute.Player}>
           <Player />
         </Route>

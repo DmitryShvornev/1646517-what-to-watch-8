@@ -145,5 +145,6 @@ export const films: Film[] = [
     genre: 'Detective',
     released: 2003,
     isFavorite: false,
+
   },
 ];

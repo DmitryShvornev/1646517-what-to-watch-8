@@ -8,34 +8,36 @@ import NotFound from '../not-found/not-found';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import PrivateRoute from '../private-route/private-route';
+import {Films} from '../../types/film';
 
 type AppProps = {
   title: string;
   genre: string;
   year: number;
+  films: Films;
 }
 
-function App({ title, genre, year }: AppProps): JSX.Element {
+function App({ title, genre, year, films }: AppProps): JSX.Element {
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path={AppRoute.Main}>
-          <MainPage title={title} genre={genre} year={year} />
+          <MainPage title={title} genre={genre} year={year} films={films} />
         </Route>
-        <Route exact path={AppRoute.Film}>
-          <MoviePage />
+        <Route exact path={AppRoute.Movie}>
+          <MoviePage film={films[0]}/>
         </Route>
         <PrivateRoute
           exact
           path={AppRoute.MyList}
-          render={() => <MyList/>}
+          render={() => <MyList films={films}/>}
           authorizationStatus={AuthorizationStatus.NoAuth}
         />
         <Route exact path={AppRoute.Player}>
-          <Player />
+          <Player film={films[0]}/>
         </Route>
         <Route exact path={AppRoute.AddReview}>
-          <Review />
+          <Review film={films[0]}/>
         </Route>
         <Route exact path={AppRoute.SignIn}>
           <SignIn />

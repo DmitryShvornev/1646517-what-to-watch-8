@@ -1,12 +1,16 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { useHistory } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { FilmCardProps } from '../../const';
 
-function MoviePage(): JSX.Element {
+function MoviePage({ film }: FilmCardProps): JSX.Element {
+  const history = useHistory();
   return (
     <>
       <section className="film-card film-card--full">
         <div className="film-card__hero">
           <div className="film-card__bg">
-            <img src="img/bg-the-grand-budapest-hotel.jpg" alt="The Grand Budapest Hotel" />
+            <img src={film.backgroundImage} alt={film.name} />
           </div>
 
           <h1 className="visually-hidden">WTW</h1>
@@ -34,10 +38,10 @@ function MoviePage(): JSX.Element {
 
           <div className="film-card__wrap">
             <div className="film-card__desc">
-              <h2 className="film-card__title">The Grand Budapest Hotel</h2>
+              <h2 className="film-card__title">{film.name}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">Drama</span>
-                <span className="film-card__year">2014</span>
+                <span className="film-card__genre">{film.genre}</span>
+                <span className="film-card__year">{film.released}</span>
               </p>
 
               <div className="film-card__buttons">
@@ -53,7 +57,12 @@ function MoviePage(): JSX.Element {
                   </svg>
                   <span>My list</span>
                 </button>
-                <a href="add-review.html" className="btn film-card__button">Add review</a>
+                <a href="add-review.html" className="btn film-card__button" onClick={(evt) => {
+                  evt.preventDefault();
+                  history.push(AppRoute.AddReview);
+                }}
+                >Add review
+                </a>
               </div>
             </div>
           </div>

@@ -1,15 +1,20 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
-import FilmCard from '../film-card/film-card';
+import FilmsList from '../films-list/films-list';
+import { Films } from '../../types/film';
+import {useHistory} from 'react-router-dom';
+import {AppRoute} from '../../const';
 
 type MainPageProps = {
   title: string;
   genre: string;
   year: number;
+  films: Films;
 }
 
 
-function MainPage({title, genre, year} : MainPageProps): JSX.Element {
+function MainPage({title, genre, year, films} : MainPageProps): JSX.Element {
+  const history = useHistory();
   return (
     <React.Fragment>
       <section className="film-card">
@@ -54,7 +59,7 @@ function MainPage({title, genre, year} : MainPageProps): JSX.Element {
               </p>
 
               <div className="film-card__buttons">
-                <button className="btn btn--play film-card__button" type="button">
+                <button className="btn btn--play film-card__button" type="button" onClick={() => history.push(AppRoute.Player)}>
                   <svg viewBox="0 0 19 19" width="19" height="19">
                     <use xlinkHref="#play-s"></use>
                   </svg>
@@ -108,28 +113,7 @@ function MainPage({title, genre, year} : MainPageProps): JSX.Element {
             </li>
           </ul>
 
-          <div className="catalog__films-list">
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-            <FilmCard/>
-          </div>
+          <FilmsList films={films}/>
 
           <div className="catalog__more">
             <button className="catalog__button" type="button">Show more</button>

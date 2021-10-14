@@ -1,10 +1,14 @@
-import {FilmCardProps} from '../../const';
+import { Film } from '../../types/film';
 
 const PlayerStyle = {
   left: '30%',
 };
 
-function Player({film} : FilmCardProps) : JSX.Element {
+type Props = {
+  film: Film;
+}
+
+function Player({film} : Props) : JSX.Element {
   return (
     <div className="player">
       <video src={film.videoLink} className="player__video" poster={film.posterImage}></video>

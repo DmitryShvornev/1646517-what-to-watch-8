@@ -1,27 +1,28 @@
-import {Film} from '../../types/film';
+import { Film } from '../../types/film';
 import { useHistory } from 'react-router-dom';
 import { AppRoute } from '../../const';
+import { MouseEvent } from 'react';
 
-type SpecialFilmCardProps = {
+type Props = {
   film: Film;
-  handler: () => void;
+  onMouseEnter: () => void;
 }
 
 
-function FilmCard({ film, handler }: SpecialFilmCardProps): JSX.Element {
+function FilmCard({ film, onMouseEnter }: Props): JSX.Element {
   const { name, posterImage } = film;
   const history = useHistory();
+  const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.push(AppRoute.Film);
+  };
   return (
-    <article className="small-film-card catalog__films-card" onMouseEnter={handler}>
+    <article className="small-film-card catalog__films-card" onMouseEnter={onMouseEnter}>
       <div className="small-film-card__image">
         <img src={posterImage} alt={name} width="280" height="175" />
       </div>
       <h3 className="small-film-card__title">
-        <a className="small-film-card__link" href="blank.html" onClick={(evt) => {
-          evt.preventDefault();
-          history.push(AppRoute.Movie);
-        }}
-        >{name}
+        <a className="small-film-card__link" href="blank.html" onClick={onClick}>{name}
         </a>
       </h3>
     </article>

@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FilmCardProps} from '../../const';
+import { Film } from '../../types/film';
 import CommentForm from '../comment-form/comment-form';
 
+type Props = {
+  film:Film;
+}
 
-function Review({film} : FilmCardProps): JSX.Element {
+function Review({film} : Props): JSX.Element {
   return (
     <section className="film-card film-card--full">
       <div className="film-card__header">

@@ -8,13 +8,13 @@ import NotFound from '../not-found/not-found';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import PrivateRoute from '../private-route/private-route';
-import {Films} from '../../types/film';
+import {Film} from '../../types/film';
 
 type AppProps = {
   title: string;
   genre: string;
   year: number;
-  films: Films;
+  films: Film[];
 }
 
 function App({ title, genre, year, films }: AppProps): JSX.Element {
@@ -24,7 +24,7 @@ function App({ title, genre, year, films }: AppProps): JSX.Element {
         <Route exact path={AppRoute.Main}>
           <MainPage title={title} genre={genre} year={year} films={films} />
         </Route>
-        <Route exact path={AppRoute.Movie}>
+        <Route exact path={AppRoute.Film}>
           <MoviePage film={films[0]}/>
         </Route>
         <PrivateRoute

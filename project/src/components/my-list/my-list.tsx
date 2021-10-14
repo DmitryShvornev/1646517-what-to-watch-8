@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Films } from '../../types/film';
+import { Film } from '../../types/film';
 import FilmsList from '../films-list/films-list';
 
 type MyListProps = {
-  films: Films;
+  films: Film[];
 }
 
 function MyList({films} : MyListProps): JSX.Element {

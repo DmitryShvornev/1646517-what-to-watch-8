@@ -1,10 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useHistory } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import { FilmCardProps } from '../../const';
+import { MouseEvent } from 'react';
+import { Film } from '../../types/film';
 
-function MoviePage({ film }: FilmCardProps): JSX.Element {
+type Props = {
+  film: Film;
+}
+
+function MoviePage({ film }: Props): JSX.Element {
   const history = useHistory();
+  const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.push(AppRoute.AddReview);
+  };
   return (
     <>
       <section className="film-card film-card--full">
@@ -57,11 +66,7 @@ function MoviePage({ film }: FilmCardProps): JSX.Element {
                   </svg>
                   <span>My list</span>
                 </button>
-                <a href="add-review.html" className="btn film-card__button" onClick={(evt) => {
-                  evt.preventDefault();
-                  history.push(AppRoute.AddReview);
-                }}
-                >Add review
+                <a href="add-review.html" className="btn film-card__button" onClick={onClick}>Add review
                 </a>
               </div>
             </div>

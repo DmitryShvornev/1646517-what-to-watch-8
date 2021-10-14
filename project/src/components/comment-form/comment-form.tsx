@@ -1,7 +1,10 @@
 import { useState, ChangeEvent } from 'react';
 
 function CommentForm(): JSX.Element {
-  const [userText, setUserText] = useState('');
+  const [state, setState] = useState('');
+  const onChangeHandler = ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
+    setState(target.value);
+  };
   return (
     <form action="#" className="add-review__form">
       <div className="rating">
@@ -40,11 +43,9 @@ function CommentForm(): JSX.Element {
 
       <div className="add-review__text">
         <textarea className="add-review__textarea" name="review-text" id="review-text" placeholder="Review text" onChange={
-          ({ target }: ChangeEvent<HTMLTextAreaElement>) => {
-            setUserText(target.value);
-          }
+          onChangeHandler
         }
-        >{userText}
+        >{state}
         </textarea>
         <div className="add-review__submit">
           <button className="add-review__btn" type="submit">Post</button>

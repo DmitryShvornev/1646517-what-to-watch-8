@@ -2,6 +2,7 @@ import { Film } from '../../types/film';
 import { useHistory } from 'react-router-dom';
 import { AppRoute } from '../../const';
 import { MouseEvent } from 'react';
+import VideoPlayer from '../video-player/video-player';
 
 type Props = {
   film: Film;
@@ -19,7 +20,7 @@ function FilmCard({ film, onMouseEnter }: Props): JSX.Element {
   return (
     <article className="small-film-card catalog__films-card" onMouseEnter={onMouseEnter}>
       <div className="small-film-card__image">
-        <img src={posterImage} alt={name} width="280" height="175" />
+        <VideoPlayer src={film.previewVideoLink} poster={posterImage} autoPlay={false}/>
       </div>
       <h3 className="small-film-card__title">
         <a className="small-film-card__link" href="blank.html" onClick={onClick}>{name}

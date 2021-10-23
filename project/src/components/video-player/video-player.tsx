@@ -1,28 +1,24 @@
-import { useState, useEffect, useRef} from 'react';
+import { useRef } from 'react';
 
 type Props = {
-  autoPlay: boolean;
+  play: boolean;
   src: string;
   poster: string;
 }
 
-function VideoPlayer({autoPlay, src, poster}:Props) : JSX.Element {
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
-
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  useEffect(() => {
-    if (videoRef.current === null) {
-      return;
-    }
-
-    if (isPlaying) {
+function VideoPlayer({ play, src, poster }: Props): JSX.Element {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  if (videoRef.current) {
+    if (play) {
       videoRef.current.play();
-      return;
+    } else {
+      videoRef.current.pause();
     }
-
-    videoRef.current.pause();
-  }, [isPlaying]);
-  return (<video src={src} ref={videoRef} className="player__video" poster={poster} onMouseEnter={() => setIsPlaying(!isPlaying)} ></video>);
+  }
+  return (
+    <video ref={videoRef} className="player__video" poster={poster} onPause={() => videoRef.current?.load()} muted>
+      <source src={src}></source>
+    </video>);
 }
 
 export default VideoPlayer;

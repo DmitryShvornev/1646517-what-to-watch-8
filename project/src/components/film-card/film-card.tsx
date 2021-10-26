@@ -7,12 +7,11 @@ import VideoPlayer from '../video-player/video-player';
 type Props = {
   film: Film;
   onMouseOver: () => void;
-  onMouseOut: () => void;
   active: boolean;
 }
 
 
-function FilmCard({ active, film, onMouseOver, onMouseOut }: Props): JSX.Element {
+function FilmCard({ active, film, onMouseOver }: Props): JSX.Element {
   const { name, posterImage } = film;
   const history = useHistory();
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
@@ -20,7 +19,7 @@ function FilmCard({ active, film, onMouseOver, onMouseOut }: Props): JSX.Element
     history.push(AppRoute.Film);
   };
   return (
-    <article className="small-film-card catalog__films-card" onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
+    <article className="small-film-card catalog__films-card" onMouseOver={onMouseOver}>
       <div className="small-film-card__image">
         <VideoPlayer src={film.previewVideoLink} poster={posterImage} play={active}/>
       </div>

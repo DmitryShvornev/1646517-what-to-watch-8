@@ -12,7 +12,7 @@ function VideoPlayer({ play, src, poster }: Props): JSX.Element {
     if (play) {
       setTimeout(() => videoRef.current?.play(), 1000);
     } else {
-      videoRef.current.pause();
+      setTimeout(() => videoRef.current?.pause(), 1000);
     }
   }
   return (

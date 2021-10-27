@@ -1,24 +1,16 @@
-import { useRef } from 'react';
+import { forwardRef, ForwardedRef } from 'react';
 
 type Props = {
-  play: boolean;
   src: string;
   poster: string;
 }
 
-function VideoPlayer({ play, src, poster }: Props): JSX.Element {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  if (videoRef.current) {
-    if (play) {
-      setTimeout(() => videoRef.current?.play(), 1000);
-    } else {
-      setTimeout(() => videoRef.current?.pause(), 1000);
-    }
-  }
+function Player({ src, poster }: Props, ref: ForwardedRef<HTMLVideoElement>): JSX.Element {
   return (
-    <video ref={videoRef} className="player__video" poster={poster} onPause={() => videoRef.current?.load()} muted>
+    <video className="player__video" ref={ref} poster={poster} muted>
       <source src={src}></source>
     </video>);
 }
 
+const VideoPlayer = forwardRef(Player);
 export default VideoPlayer;

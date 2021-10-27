@@ -3,25 +3,34 @@ import { useHistory } from 'react-router-dom';
 import { AppRoute } from '../../const';
 import { MouseEvent } from 'react';
 import VideoPlayer from '../video-player/video-player';
+import { useRef } from 'react';
 
 type Props = {
   film: Film;
-  onMouseOver: () => void;
-  active: boolean;
 }
 
 
-function FilmCard({ active, film, onMouseOver }: Props): JSX.Element {
+function FilmCard({  film }: Props): JSX.Element {
   const { name, posterImage } = film;
   const history = useHistory();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     history.push(AppRoute.Film);
   };
+
+  const onMouseOver = () => {
+    videoRef.current?.play();
+  };
+
+  const onMouseOut = () => {
+    videoRef.current?.load();
+  };
   return (
-    <article className="small-film-card catalog__films-card" onMouseOver={onMouseOver}>
+    <article className="small-film-card catalog__films-card" onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
       <div className="small-film-card__image">
-        <VideoPlayer src={film.previewVideoLink} poster={posterImage} play={active}/>
+        <VideoPlayer src={film.previewVideoLink} poster={posterImage} ref={videoRef}/>
       </div>
       <h3 className="small-film-card__title">
         <a className="small-film-card__link" href="blank.html" onClick={onClick}>{name}

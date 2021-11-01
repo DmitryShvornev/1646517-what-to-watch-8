@@ -4,9 +4,9 @@ export const films: Film[] = [
   {
     id: 1,
     name: 'Never gonna give you up',
-    posterImage: 'img/avatar.jpg',
-    previewImage: 'img/avatar.jpg',
-    backgroundImage: 'img/avatar.jpg',
+    posterImage: 'img/snatch.jpg',
+    previewImage: 'img/snatch.jpg',
+    backgroundImage: 'img/snatch.jpg',
     backgroundColor: '#483D8B',
     videoLink: 'https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4',
     previewVideoLink: 'https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4',
@@ -34,7 +34,7 @@ export const films: Film[] = [
     director: 'Some famous guy',
     starring: ['Eminem','Dr Dre','Mike Tyson'],
     runTime: 77,
-    genre: '',
+    genre: 'Rickroll',
     released: 2007,
     isFavorite: true,
   }, {

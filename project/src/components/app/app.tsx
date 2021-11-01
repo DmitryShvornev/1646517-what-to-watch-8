@@ -25,7 +25,7 @@ function App({ title, genre, year, films }: AppProps): JSX.Element {
           <MainPage title={title} genre={genre} year={year} films={films} />
         </Route>
         <Route exact path={AppRoute.Film}>
-          <MoviePage film={films[0]}/>
+          <MoviePage film={films[0]} allFilms={films}/>
         </Route>
         <PrivateRoute
           exact

@@ -1,18 +1,30 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { useHistory } from 'react-router-dom';
 import { AppRoute } from '../../const';
-import { MouseEvent } from 'react';
+import { MouseEvent, useState } from 'react';
 import { Film } from '../../types/film';
+import Tabs from '../tabs/tabs';
+import FilmsList from '../films-list/films-list';
 
 type Props = {
   film: Film;
+  allFilms: Film[];
 }
 
-function MoviePage({ film }: Props): JSX.Element {
+function MoviePage({ film, allFilms }: Props): JSX.Element {
   const history = useHistory();
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     history.push(AppRoute.AddReview);
+  };
+  const moreLikeThisFilms = allFilms.filter((item) => item.genre === film.genre && item.id !== film.id).slice(0,4);
+  const [state, setState] = useState('Overview');
+  const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    const option = evt.currentTarget.getAttribute('data-option');
+    document.querySelector('.film-nav__item--active')?.classList.remove('film-nav__item--active');
+    evt.currentTarget.parentElement?.classList.add('film-nav__item--active');
+    setState(String(option));
   };
   return (
     <>
@@ -76,41 +88,25 @@ function MoviePage({ film }: Props): JSX.Element {
         <div className="film-card__wrap film-card__translate-top">
           <div className="film-card__info">
             <div className="film-card__poster film-card__poster--big">
-              <img src="img/the-grand-budapest-hotel-poster.jpg" alt="The Grand Budapest Hotel poster" width="218" height="327" />
+              <img src={film.posterImage} alt={film.name} width="218" height="327" />
             </div>
 
             <div className="film-card__desc">
               <nav className="film-nav film-card__nav">
                 <ul className="film-nav__list">
                   <li className="film-nav__item film-nav__item--active">
-                    <a href="#" className="film-nav__link">Overview</a>
+                    <a href="#" data-option="Overview" className="film-nav__link" onClick={onOptionClick}>Overview</a>
                   </li>
                   <li className="film-nav__item">
-                    <a href="#" className="film-nav__link">Details</a>
+                    <a href="#" data-option="Details" className="film-nav__link" onClick={onOptionClick}>Details</a>
                   </li>
                   <li className="film-nav__item">
-                    <a href="#" className="film-nav__link">Reviews</a>
+                    <a href="#" data-option="Reviews" className="film-nav__link" onClick={onOptionClick}>Reviews</a>
                   </li>
                 </ul>
               </nav>
 
-              <div className="film-rating">
-                <div className="film-rating__score">8,9</div>
-                <p className="film-rating__meta">
-                  <span className="film-rating__level">Very good</span>
-                  <span className="film-rating__count">240 ratings</span>
-                </p>
-              </div>
-
-              <div className="film-card__text">
-                <p>In the 1930s, the Grand Budapest Hotel is a popular European ski resort, presided over by concierge Gustave H. (Ralph Fiennes). Zero, a junior lobby boy, becomes Gustave&rsquos friend and protege.</p>
-
-                <p>Gustave prides himself on providing first-class service to the hotel&rsquos guests, including satisfying the sexual needs of the many elderly women who stay there. When one of Gustave&rsquos lovers dies mysteriously, Gustave finds himself the recipient of a priceless painting and the chief suspect in her murder.</p>
-
-                <p className="film-card__director"><strong>Director: Wes Anderson</strong></p>
-
-                <p className="film-card__starring"><strong>Starring: Bill Murray, Edward Norton, Jude Law, Willem Dafoe and other</strong></p>
-              </div>
+              <Tabs option={state} film={film}/>
             </div>
           </div>
         </div>
@@ -120,43 +116,7 @@ function MoviePage({ film }: Props): JSX.Element {
         <section className="catalog catalog--like-this">
           <h2 className="catalog__title">More like this</h2>
 
-          <div className="catalog__films-list">
-            <article className="small-film-card catalog__films-card">
-              <div className="small-film-card__image">
-                <img src="img/fantastic-beasts-the-crimes-of-grindelwald.jpg" alt="Fantastic Beasts: The Crimes of Grindelwald" width="280" height="175" />
-              </div>
-              <h3 className="small-film-card__title">
-                <a className="small-film-card__link" href="film-page.html">Fantastic Beasts: The Crimes of Grindelwald</a>
-              </h3>
-            </article>
-
-            <article className="small-film-card catalog__films-card">
-              <div className="small-film-card__image">
-                <img src="img/bohemian-rhapsody.jpg" alt="Bohemian Rhapsody" width="280" height="175" />
-              </div>
-              <h3 className="small-film-card__title">
-                <a className="small-film-card__link" href="film-page.html">Bohemian Rhapsody</a>
-              </h3>
-            </article>
-
-            <article className="small-film-card catalog__films-card">
-              <div className="small-film-card__image">
-                <img src="img/macbeth.jpg" alt="Macbeth" width="280" height="175" />
-              </div>
-              <h3 className="small-film-card__title">
-                <a className="small-film-card__link" href="film-page.html">Macbeth</a>
-              </h3>
-            </article>
-
-            <article className="small-film-card catalog__films-card">
-              <div className="small-film-card__image">
-                <img src="img/aviator.jpg" alt="Aviator" width="280" height="175" />
-              </div>
-              <h3 className="small-film-card__title">
-                <a className="small-film-card__link" href="film-page.html">Aviator</a>
-              </h3>
-            </article>
-          </div>
+          <FilmsList films={moreLikeThisFilms}/>
         </section>
 
         <footer className="page-footer">

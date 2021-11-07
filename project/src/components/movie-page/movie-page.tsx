@@ -22,8 +22,6 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
   const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     const option = evt.currentTarget.getAttribute('data-option');
-    document.querySelector('.film-nav__item--active')?.classList.remove('film-nav__item--active');
-    evt.currentTarget.parentElement?.classList.add('film-nav__item--active');
     setState(String(option));
   };
   return (
@@ -94,13 +92,13 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
             <div className="film-card__desc">
               <nav className="film-nav film-card__nav">
                 <ul className="film-nav__list">
-                  <li className="film-nav__item film-nav__item--active">
+                  <li className={`film-nav__item ${state === 'Overview' ? 'film-nav__item--active':''}`}>
                     <a href="#" data-option="Overview" className="film-nav__link" onClick={onOptionClick}>Overview</a>
                   </li>
-                  <li className="film-nav__item">
+                  <li className={`film-nav__item ${state === 'Details' ? 'film-nav__item--active':''}`}>
                     <a href="#" data-option="Details" className="film-nav__link" onClick={onOptionClick}>Details</a>
                   </li>
-                  <li className="film-nav__item">
+                  <li className={`film-nav__item ${state === 'Reviews' ? 'film-nav__item--active':''}`}>
                     <a href="#" data-option="Reviews" className="film-nav__link" onClick={onOptionClick}>Reviews</a>
                   </li>
                 </ul>

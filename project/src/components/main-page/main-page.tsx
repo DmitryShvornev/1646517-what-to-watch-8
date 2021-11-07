@@ -1,19 +1,38 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import FilmsList from '../films-list/films-list';
-import { Film } from '../../types/film';
-import {useHistory} from 'react-router-dom';
-import {AppRoute} from '../../const';
-
-type MainPageProps = {
-  title: string;
-  genre: string;
-  year: number;
-  films: Film[];
-}
+import GenreList from '../genre-list/genre-list';
+import { useHistory } from 'react-router-dom';
+import { AppRoute } from '../../const';
+import { Dispatch } from 'redux';
+import { connect, ConnectedProps } from 'react-redux';
+import { State } from '../../types/state';
+import { Actions } from '../../types/action';
+import { updateGenre } from '../../store/action';
 
 
-function MainPage({title, genre, year, films} : MainPageProps): JSX.Element {
+const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer}: State) => ({
+  genre,
+  films,
+  filmsBuffer,
+  titlePromo,
+  yearPromo,
+  genrePromo,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  onChangeGenre(genre: string) {
+    dispatch(updateGenre(genre));
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+
+function MainPage(props: PropsFromRedux): JSX.Element {
+  const { titlePromo, genrePromo, yearPromo, films, filmsBuffer, onChangeGenre, genre } = props;
   const history = useHistory();
   const onClick = () => history.push(AppRoute.Player);
   return (
@@ -53,10 +72,10 @@ function MainPage({title, genre, year, films} : MainPageProps): JSX.Element {
             </div>
 
             <div className="film-card__desc">
-              <h2 className="film-card__title">{title}</h2>
+              <h2 className="film-card__title">{titlePromo}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">{genre}</span>
-                <span className="film-card__year">{year}</span>
+                <span className="film-card__genre">{genrePromo}</span>
+                <span className="film-card__year">{yearPromo}</span>
               </p>
 
               <div className="film-card__buttons">
@@ -81,40 +100,8 @@ function MainPage({title, genre, year, films} : MainPageProps): JSX.Element {
         <section className="catalog">
           <h2 className="catalog__title visually-hidden">Catalog</h2>
 
-          <ul className="catalog__genres-list">
-            <li className="catalog__genres-item catalog__genres-item--active">
-              <a href="#" className="catalog__genres-link">All genres</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Comedies</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Crime</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Documentary</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Dramas</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Horror</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Kids & Family</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Romance</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Sci-Fi</a>
-            </li>
-            <li className="catalog__genres-item">
-              <a href="#" className="catalog__genres-link">Thrillers</a>
-            </li>
-          </ul>
-
-          <FilmsList films={films}/>
+          <GenreList films={films} dispatcher={onChangeGenre} currentGenre={genre}/>
+          <FilmsList films={filmsBuffer}/>
 
           <div className="catalog__more">
             <button className="catalog__button" type="button">Show more</button>
@@ -139,4 +126,5 @@ function MainPage({title, genre, year, films} : MainPageProps): JSX.Element {
   );
 }
 
-export default MainPage;
+export {MainPage};
+export default connector(MainPage);

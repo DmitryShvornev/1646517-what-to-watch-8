@@ -8,21 +8,15 @@ import NotFound from '../not-found/not-found';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import PrivateRoute from '../private-route/private-route';
-import {Film} from '../../types/film';
+import {films} from '../../mocks/films';
 
-type AppProps = {
-  title: string;
-  genre: string;
-  year: number;
-  films: Film[];
-}
 
-function App({ title, genre, year, films }: AppProps): JSX.Element {
+function App(): JSX.Element {
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path={AppRoute.Main}>
-          <MainPage title={title} genre={genre} year={year} films={films} />
+          <MainPage/>
         </Route>
         <Route exact path={AppRoute.Film}>
           <MoviePage film={films[0]} allFilms={films}/>

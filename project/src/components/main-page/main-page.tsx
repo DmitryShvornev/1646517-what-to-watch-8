@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
+import React, { useState } from 'react';
 import FilmsList from '../films-list/films-list';
 import GenreList from '../genre-list/genre-list';
 import { useHistory } from 'react-router-dom';
@@ -9,7 +10,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../types/state';
 import { Actions } from '../../types/action';
 import { updateGenre } from '../../store/action';
+import ShowMoreButton from '../show-more-button/show-more-button';
 
+const FILM_RENDER_COUNT = 8;
 
 const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer}: State) => ({
   genre,
@@ -34,7 +37,19 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function MainPage(props: PropsFromRedux): JSX.Element {
   const { titlePromo, genrePromo, yearPromo, films, filmsBuffer, onChangeGenre, genre } = props;
   const history = useHistory();
+  const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
+  const condition = !(cardsCount >= filmsBuffer.length);
+  console.log(condition);
+  console.log(cardsCount);
+  const [showButton, setShowButton] = useState(condition);
   const onClick = () => history.push(AppRoute.Player);
+  const onShowMoreClick = () => {
+    setCardsCount(cardsCount + FILM_RENDER_COUNT);
+    console.log(cardsCount);
+    if (cardsCount + FILM_RENDER_COUNT >= filmsBuffer.length) {
+      setShowButton(false);
+    }
+  };
   return (
     <React.Fragment>
       <section className="film-card">
@@ -101,11 +116,8 @@ function MainPage(props: PropsFromRedux): JSX.Element {
           <h2 className="catalog__title visually-hidden">Catalog</h2>
 
           <GenreList films={films} dispatcher={onChangeGenre} currentGenre={genre}/>
-          <FilmsList films={filmsBuffer}/>
-
-          <div className="catalog__more">
-            <button className="catalog__button" type="button">Show more</button>
-          </div>
+          <FilmsList films={filmsBuffer.slice(0, Math.min(cardsCount, filmsBuffer.length))}/>
+          <ShowMoreButton showButton={showButton} onButtonClick={onShowMoreClick}/>
         </section>
         <footer className="page-footer">
           <div className="logo">

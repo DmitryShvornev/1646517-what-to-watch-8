@@ -12,8 +12,8 @@ function GenreList({ films, dispatcher, currentGenre }: Props): JSX.Element {
   const genres = Array.from(new Set(films.map((item) => item.genre)));
   const onGenreClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
-    const genre = evt.currentTarget.getAttribute('data-genre');
-    dispatcher(String(genre));
+    const genre = evt.currentTarget.getAttribute('data-genre') || '';
+    dispatcher(genre);
   };
   return (
     <ul className="catalog__genres-list">

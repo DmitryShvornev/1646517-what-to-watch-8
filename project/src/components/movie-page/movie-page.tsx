@@ -11,18 +11,20 @@ type Props = {
   allFilms: Film[];
 }
 
+const MORE_FILMS_COUNT = 4;
+
 function MoviePage({ film, allFilms }: Props): JSX.Element {
   const history = useHistory();
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     history.push(AppRoute.AddReview);
   };
-  const moreLikeThisFilms = allFilms.filter((item) => item.genre === film.genre && item.id !== film.id).slice(0,4);
+  const moreLikeThisFilms = allFilms.filter((item) => item.genre === film.genre && item.id !== film.id).slice(0, MORE_FILMS_COUNT);
   const [state, setState] = useState('Overview');
   const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
-    const option = evt.currentTarget.getAttribute('data-option');
-    setState(String(option));
+    const option = evt.currentTarget.getAttribute('data-option') || '';
+    setState(option);
   };
   return (
     <>

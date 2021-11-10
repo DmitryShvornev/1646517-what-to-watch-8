@@ -8,10 +8,27 @@ import NotFound from '../not-found/not-found';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import PrivateRoute from '../private-route/private-route';
-import {films} from '../../mocks/films';
+import LoadingScreen from '../loading-screen/loading-screen';
+import {State} from '../../types/state';
+import {connect, ConnectedProps} from 'react-redux';
+
+const mapStateToProps = ({films, isDataLoaded}: State) => ({
+  films,
+  isDataLoaded,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
 
 
-function App(): JSX.Element {
+function App(props: PropsFromRedux): JSX.Element {
+  const {films, isDataLoaded} = props;
+
+  if (!isDataLoaded) {
+    return (
+      <LoadingScreen />
+    );
+  }
   return (
     <BrowserRouter>
       <Switch>
@@ -44,4 +61,5 @@ function App(): JSX.Element {
   );
 }
 
-export default App;
+export {App};
+export default connector(App);

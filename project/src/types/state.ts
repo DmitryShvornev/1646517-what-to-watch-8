@@ -1,4 +1,5 @@
 import {Film} from './film';
+import { AuthorizationStatus} from '../const';
 
 export type State = {
   genre: string;
@@ -7,4 +8,6 @@ export type State = {
   titlePromo: string;
   genrePromo: string;
   yearPromo: number;
+  authorizationStatus: AuthorizationStatus;
+  isDataLoaded: boolean;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import FilmsList from '../films-list/films-list';
@@ -39,13 +38,10 @@ function MainPage(props: PropsFromRedux): JSX.Element {
   const history = useHistory();
   const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
   const condition = !(cardsCount >= filmsBuffer.length);
-  console.log(condition);
-  console.log(cardsCount);
   const [showButton, setShowButton] = useState(condition);
   const onClick = () => history.push(AppRoute.Player);
   const onShowMoreClick = () => {
     setCardsCount(cardsCount + FILM_RENDER_COUNT);
-    console.log(cardsCount);
     if (cardsCount + FILM_RENDER_COUNT >= filmsBuffer.length) {
       setShowButton(false);
     }

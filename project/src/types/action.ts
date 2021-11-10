@@ -1,5 +1,14 @@
+import { Film } from './film';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+import { AxiosInstance } from 'axios';
+import { State } from '../types/state';
+import { AuthorizationStatus } from '../const';
+
 export enum ActionType {
-  UpdateGenre = 'updateGenre',
+  UpdateGenre = 'data/updateGenre',
+  LoadFilms = 'data/loadFilms',
+  RequireAuthorization = 'user/requireAuthorization',
+  RequireLogout = 'user/requireLogout',
 }
 
 export type UpdateGenreAction = {
@@ -7,5 +16,21 @@ export type UpdateGenreAction = {
   payload: string;
 }
 
+export type LoadFilmsAction = {
+  type: ActionType.LoadFilms;
+  payload: Film[];
+}
 
-export type Actions =  UpdateGenreAction;
+export type RequireAuthorizationAction = {
+  type: ActionType.RequireAuthorization;
+  payload: AuthorizationStatus;
+}
+
+export type RequireLogoutAction = {
+  type: ActionType.RequireLogout;
+}
+
+
+export type Actions = UpdateGenreAction | LoadFilmsAction | RequireAuthorizationAction | RequireLogoutAction;
+export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
+export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;

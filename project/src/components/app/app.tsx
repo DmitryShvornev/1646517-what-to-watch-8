@@ -6,7 +6,7 @@ import Review from '../review/review';
 import SignIn from '../sign-in/sign-in';
 import NotFound from '../not-found/not-found';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
-import { AppRoute, AuthorizationStatus } from '../../const';
+import { AppRoute } from '../../const';
 import PrivateRoute from '../private-route/private-route';
 import LoadingScreen from '../loading-screen/loading-screen';
 import {State} from '../../types/state';
@@ -42,7 +42,6 @@ function App(props: PropsFromRedux): JSX.Element {
           exact
           path={AppRoute.MyList}
           render={() => <MyList films={films}/>}
-          authorizationStatus={AuthorizationStatus.NoAuth}
         />
         <Route exact path={AppRoute.Player}>
           <Player film={films[0]}/>

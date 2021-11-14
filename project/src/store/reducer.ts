@@ -11,6 +11,7 @@ const initialState: State = {
   yearPromo: 2014,
   authorizationStatus: AuthorizationStatus.Unknown,
   isDataLoaded: false,
+  userLogin: '',
 };
 
 const reducer = (state: State = initialState, action: Actions): State => {
@@ -25,6 +26,8 @@ const reducer = (state: State = initialState, action: Actions): State => {
       return { ...state, authorizationStatus: action.payload, isDataLoaded: true };
     case ActionType.RequireLogout:
       return { ...state, authorizationStatus: AuthorizationStatus.NoAuth };
+    case ActionType.RequireLogin:
+      return {...state, userLogin: action.payload};
     default:
       return state;
   }

@@ -10,4 +10,5 @@ export type State = {
   yearPromo: number;
   authorizationStatus: AuthorizationStatus;
   isDataLoaded: boolean;
+  userLogin: string;
 }

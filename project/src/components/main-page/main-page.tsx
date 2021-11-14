@@ -3,28 +3,34 @@ import React, { useState } from 'react';
 import FilmsList from '../films-list/films-list';
 import GenreList from '../genre-list/genre-list';
 import { useHistory } from 'react-router-dom';
-import { AppRoute } from '../../const';
+import { AppRoute, AuthorizationStatus } from '../../const';
 import { Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { State } from '../../types/state';
 import { Actions } from '../../types/action';
-import { updateGenre } from '../../store/action';
+import { updateGenre, requireLogout } from '../../store/action';
 import ShowMoreButton from '../show-more-button/show-more-button';
 
 const FILM_RENDER_COUNT = 8;
 
-const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer}: State) => ({
+const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer, authorizationStatus, isDataLoaded, userLogin}: State) => ({
   genre,
   films,
   filmsBuffer,
   titlePromo,
   yearPromo,
   genrePromo,
+  authorizationStatus,
+  isDataLoaded,
+  userLogin,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
   onChangeGenre(genre: string) {
     dispatch(updateGenre(genre));
+  },
+  onLogout() {
+    dispatch(requireLogout());
   },
 });
 
@@ -34,16 +40,25 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 
 function MainPage(props: PropsFromRedux): JSX.Element {
-  const { titlePromo, genrePromo, yearPromo, films, filmsBuffer, onChangeGenre, genre } = props;
+  const { titlePromo, genrePromo, yearPromo, films, filmsBuffer, onChangeGenre, genre, authorizationStatus, isDataLoaded, onLogout, userLogin } = props;
   const history = useHistory();
   const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
-  const condition = !(cardsCount >= filmsBuffer.length);
+  const condition = Boolean(!(cardsCount >= filmsBuffer.length) || isDataLoaded);
+  const username = isDataLoaded? userLogin : 'Sign out';
   const [showButton, setShowButton] = useState(condition);
   const onClick = () => history.push(AppRoute.Player);
   const onShowMoreClick = () => {
     setCardsCount(cardsCount + FILM_RENDER_COUNT);
     if (cardsCount + FILM_RENDER_COUNT >= filmsBuffer.length) {
       setShowButton(false);
+    }
+  };
+  const onAuthClick = () => {
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      onLogout();
+    }
+    else {
+      history.push(AppRoute.SignIn);
     }
   };
   return (
@@ -66,12 +81,12 @@ function MainPage(props: PropsFromRedux): JSX.Element {
 
           <ul className="user-block">
             <li className="user-block__item">
-              <div className="user-block__avatar">
+              <div className="user-block__avatar" onClick={() => history.push(AppRoute.MyList)}>
                 <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
               </div>
             </li>
             <li className="user-block__item">
-              <a className="user-block__link">Sign out</a>
+              <a className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? `${username}`:'Sign in'}</a>
             </li>
           </ul>
         </header>

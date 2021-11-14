@@ -1,4 +1,4 @@
-import { ActionType, UpdateGenreAction, LoadFilmsAction } from '../types/action';
+import { ActionType, UpdateGenreAction, LoadFilmsAction} from '../types/action';
 import { Film } from '../types/film';
 import { AuthorizationStatus } from '../const';
 
@@ -15,6 +15,11 @@ export const loadFilms = (films: Film[]) : LoadFilmsAction => ({
 export const requireAuthorization = (authStatus: AuthorizationStatus) => ({
   type: ActionType.RequireAuthorization,
   payload: authStatus,
+} as const);
+
+export const requireLogin = (login: string) => ({
+  type: ActionType.RequireLogin,
+  payload: login,
 } as const);
 
 export const requireLogout = () => ({

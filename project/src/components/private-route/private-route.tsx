@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Route, Redirect } from 'react-router-dom';
 import { RouteProps } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
@@ -21,7 +20,6 @@ type ConnectedComponentProps = PropsFromRedux & PrivateRouteProps;
 
 function PrivateRoute(props: ConnectedComponentProps): JSX.Element {
   const { exact, path, render, authorizationStatus } = props;
-  console.log(authorizationStatus);
   return (
     <Route
       exact={exact}

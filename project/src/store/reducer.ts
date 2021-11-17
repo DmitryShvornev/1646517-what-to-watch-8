@@ -6,6 +6,27 @@ const initialState: State = {
   genre: 'All genres',
   films: [],
   filmsBuffer: [],
+  similarFilms: [],
+  commentsList: [],
+  currentFilm: {
+    id: -1,
+    name: '',
+    posterImage: '',
+    previewImage: '',
+    backgroundImage: '',
+    backgroundColor: '',
+    videoLink: '',
+    previewVideoLink: '',
+    description: '',
+    rating: 0,
+    scoresCount: 0,
+    director: '',
+    starring: [],
+    runTime: 0,
+    genre: '',
+    released: 0,
+    isFavorite: false,
+  },
   titlePromo: 'The Grand Budapest Hotel',
   genrePromo: 'Drama',
   yearPromo: 2014,
@@ -22,6 +43,12 @@ const reducer = (state: State = initialState, action: Actions): State => {
       return { ...state, genre: action.payload, filmsBuffer: updatedList };
     case ActionType.LoadFilms:
       return { ...state, films: action.payload, filmsBuffer: action.payload };
+    case ActionType.LoadFilm:
+      return {...state, currentFilm: action.payload};
+    case ActionType.LoadSimilar:
+      return {...state, similarFilms: action.payload};
+    case ActionType.LoadComments:
+      return {...state, commentsList: action.payload};
     case ActionType.RequireAuthorization:
       return { ...state, authorizationStatus: action.payload, isDataLoaded: true };
     case ActionType.RequireLogout:

@@ -44,7 +44,7 @@ function MainPage(props: PropsFromRedux): JSX.Element {
   const history = useHistory();
   const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
   const condition = Boolean(!(cardsCount >= filmsBuffer.length) || isDataLoaded);
-  const username = isDataLoaded? userLogin : 'Sign out';
+  const username = isDataLoaded? `Sign out ${userLogin}` : 'Sign out';
   const [showButton, setShowButton] = useState(condition);
   const onClick = () => history.push(AppRoute.Player);
   const onShowMoreClick = () => {

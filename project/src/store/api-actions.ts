@@ -1,9 +1,11 @@
 import { ThunkActionResult } from '../types/action';
-import { loadFilms, requireAuthorization, requireLogout, requireLogin } from './action';
+import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments } from './action';
 import { saveToken, dropToken, Token } from '../token';
 import { APIRoute, AuthorizationStatus } from '../const';
 import { Film } from '../types/film';
+import { CommentReview } from '../types/comment';
 import { AuthData } from '../types/auth-data';
+import { CommentPost } from '../types/comment-post';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function adaptToClient(film: any) {
@@ -40,6 +42,24 @@ export const fetchFilmsAction = (): ThunkActionResult =>
     dispatch(loadFilms(data.map((item) => adaptToClient(item))));
   };
 
+export const fetchFilmAction = (id: number): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<Film>(`${APIRoute.Films}/${id}`);
+    dispatch(loadFilm(adaptToClient(data)));
+  };
+
+export const fetchSimilarAction = (id: number): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<Film[]>(`${APIRoute.Films}/${id}/similar`);
+    dispatch(loadSimilar(data.map((item) => adaptToClient(item))));
+  };
+
+export const fetchCommentsAction = (id: number): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<CommentReview[]>(`comments/${id}`);
+    dispatch(loadComments(data));
+  };
+
 export const checkAuthAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
     await api.get(APIRoute.Login)
@@ -54,6 +74,12 @@ export const loginAction = ({ login: email, password }: AuthData): ThunkActionRe
     saveToken(token);
     dispatch(requireAuthorization(AuthorizationStatus.Auth));
     dispatch(requireLogin(email));
+  };
+
+export const postAction = (id : number, { rating, comment }: CommentPost): ThunkActionResult =>
+  async (dispatch, _getState, api) => {
+    const { data: { token } } = await api.post<{ token: Token }>(`/comments/${id}`, { rating, comment });
+    saveToken(token);
   };
 
 

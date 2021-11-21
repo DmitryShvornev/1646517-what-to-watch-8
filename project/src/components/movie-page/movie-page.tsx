@@ -1,33 +1,66 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useState, useEffect } from 'react';
 import Tabs from '../tabs/tabs';
 import {State} from '../../types/state';
 import FilmsList from '../films-list/films-list';
-import { connect, ConnectedProps } from 'react-redux';
+import NotFound from '../not-found/not-found';
+import { connect, ConnectedProps, useStore } from 'react-redux';
+import {fetchFilmAction, fetchSimilarAction, fetchCommentsAction} from '../../store/api-actions';
+import {ThunkAppDispatch} from '../../types/action';
+import { requireLogout } from '../../store/action';
+import { Dispatch } from 'redux';
+import { Actions } from '../../types/action';
 
 
-const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus}: State) => ({
+const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userLogin, films}: State) => ({
   currentFilm,
   similarFilms,
   authorizationStatus,
+  userLogin,
+  films,
 });
 
-const connector = connect(mapStateToProps);
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  onLogout() {
+    dispatch(requireLogout());
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function MoviePage({ currentFilm, similarFilms, authorizationStatus }: PropsFromRedux): JSX.Element {
+function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, onLogout, films}: PropsFromRedux): JSX.Element {
+  const store = useStore();
+  // eslint-disable-next-line
+  const {id} : any = useParams();
+  useEffect(() => {
+    (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
+    (store.dispatch as ThunkAppDispatch)(fetchSimilarAction(Number(id)));
+    (store.dispatch as ThunkAppDispatch)(fetchCommentsAction(Number(id)));
+  }, [id, store.dispatch]);
   const history = useHistory();
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
-    history.push(AppRoute.AddReview);
+    history.push(`${AppRoute.Film}/${currentFilm.id}/${AppRoute.AddReview}`);
   };
   const [state, setState] = useState('Overview');
+  if (films.find((item) => item.id === Number(id)) === undefined && id !== -1) {
+    return <NotFound/>;
+  }
   const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     const option = evt.currentTarget.getAttribute('data-option') || '';
     setState(option);
+  };
+  const onAuthClick = () => {
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      onLogout();
+    }
+    else {
+      history.push(AppRoute.SignIn);
+    }
   };
   return (
     <>
@@ -55,7 +88,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus }: PropsFrom
                 </div>
               </li>
               <li className="user-block__item">
-                <a className="user-block__link">Sign out</a>
+                <a className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? `${userLogin}`:'Sign in'}</a>
               </li>
             </ul>
           </header>

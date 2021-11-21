@@ -1,12 +1,8 @@
 import { Film } from '../../types/film';
 import { useHistory } from 'react-router-dom';
-import { AppRoute } from '../../const';
 import { MouseEvent } from 'react';
 import VideoPlayer from '../video-player/video-player';
 import { useRef, useState, useEffect } from 'react';
-import { useStore } from 'react-redux';
-import {fetchCommentsAction, fetchFilmAction, fetchSimilarAction} from '../../store/api-actions';
-import {ThunkAppDispatch} from '../../types/action';
 
 type Props = {
   film: Film;
@@ -19,7 +15,6 @@ function FilmCard({ film }: Props): JSX.Element {
   const history = useHistory();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setIsPlaying] = useState(false);
-  const store = useStore();
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -35,10 +30,7 @@ function FilmCard({ film }: Props): JSX.Element {
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     const id = evt.currentTarget.getAttribute('data-id');
-    (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
-    (store.dispatch as ThunkAppDispatch)(fetchSimilarAction(Number(id)));
-    (store.dispatch as ThunkAppDispatch)(fetchCommentsAction(Number(id)));
-    history.push(AppRoute.Film);
+    history.push(`films/${id}`);
   };
 
   const onMouseOver = () => setIsPlaying(true);

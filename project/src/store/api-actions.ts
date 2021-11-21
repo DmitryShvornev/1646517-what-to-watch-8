@@ -6,6 +6,10 @@ import { Film } from '../types/film';
 import { CommentReview } from '../types/comment';
 import { AuthData } from '../types/auth-data';
 import { CommentPost } from '../types/comment-post';
+import {toast} from 'react-toastify';
+
+const AUTH_FAIL_MESSAGE = 'Не забудьте авторизоваться';
+const SEND_FAIL_MESSAGE = 'Не удалось отправить комментарий';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function adaptToClient(film: any) {
@@ -62,10 +66,12 @@ export const fetchCommentsAction = (id: number): ThunkActionResult =>
 
 export const checkAuthAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    await api.get(APIRoute.Login)
-      .then(() => {
-        dispatch(requireAuthorization(AuthorizationStatus.Auth));
-      });
+    try {
+      await api.get(APIRoute.Login);
+      dispatch(requireAuthorization(AuthorizationStatus.Auth));
+    } catch {
+      toast.info(AUTH_FAIL_MESSAGE);
+    }
   };
 
 export const loginAction = ({ login: email, password }: AuthData): ThunkActionResult =>
@@ -78,8 +84,13 @@ export const loginAction = ({ login: email, password }: AuthData): ThunkActionRe
 
 export const postAction = (id : number, { rating, comment }: CommentPost): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    const { data: { token } } = await api.post<{ token: Token }>(`/comments/${id}`, { rating, comment });
-    saveToken(token);
+    try {
+      const { data: { token } } = await api.post<{ token: Token }>(`/comments/${id}`, { comment, rating });
+      saveToken(token);
+      dispatch(fetchCommentsAction(id));
+    } catch {
+      toast.info(SEND_FAIL_MESSAGE);
+    }
   };
 
 

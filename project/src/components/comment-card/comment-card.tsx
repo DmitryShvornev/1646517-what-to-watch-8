@@ -1,23 +1,23 @@
 import { CommentReview } from '../../types/comment';
 
 type Props = {
-  commentCard: CommentReview;
+  comment: CommentReview;
 }
 
-function CommentCard({commentCard}: Props): JSX.Element {
-  const date = new Date(commentCard.date).toDateString();
+function CommentCard({comment}: Props): JSX.Element {
+  const date = new Date(comment.date).toDateString();
   return (
     <div className="review">
       <blockquote className="review__quote">
-        <p className="review__text">{commentCard.comment}</p>
+        <p className="review__text">{comment.comment}</p>
 
         <footer className="review__details">
-          <cite className="review__author">{commentCard.user.name}</cite>
-          <time className="review__date" dateTime={commentCard.date}>{date}</time>
+          <cite className="review__author">{comment.user.name}</cite>
+          <time className="review__date" dateTime={comment.date}>{date}</time>
         </footer>
       </blockquote>
 
-      <div className="review__rating">{commentCard.rating}</div>
+      <div className="review__rating">{comment.rating}</div>
     </div>
   );
 }

@@ -79,7 +79,7 @@ function Tabs({ option, film, commentsList }: ConnectedComponentProps): JSX.Elem
       component = (
         <div className="film-card__reviews film-card__row">
           <div className="film-card__reviews-col">
-            {commentsList.map((item) => (<CommentCard key={item.id} commentCard={item}/>))}
+            {commentsList.map((item) => (<CommentCard key={item.id} comment={item}/>))}
           </div>
         </div>
       );

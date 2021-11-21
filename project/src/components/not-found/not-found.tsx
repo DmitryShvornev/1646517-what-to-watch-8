@@ -1,7 +1,9 @@
 function NotFound(): JSX.Element {
   return (
     <section className="film-card">
-      <h2 className="film-card__title">404 Not Found</h2>
+      <div className="film-card__desc">
+        <h2 className="film-card__title">404 Not found</h2>
+      </div>
     </section>
   );
 }

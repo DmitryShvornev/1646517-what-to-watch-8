@@ -36,16 +36,16 @@ function App(props: PropsFromRedux): JSX.Element {
         <Route exact path={AppRoute.Main}>
           <MainPage/>
         </Route>
-        <Route exact path={AppRoute.Film} component={MoviePage}/>
+        <Route exact path={`${AppRoute.Film}/:id`} component={MoviePage}/>
         <PrivateRoute
           exact
           path={AppRoute.MyList}
           render={() => <MyList films={films}/>}
         />
-        <Route exact path={AppRoute.Player}>
+        <Route exact path={`${AppRoute.Player}/:id`}>
           <Player film={currentFilm}/>
         </Route>
-        <Route exact path={AppRoute.AddReview}>
+        <Route exact path={`${AppRoute.Film}/:id/${AppRoute.AddReview}`}>
           <Review film={currentFilm}/>
         </Route>
         <Route exact path={AppRoute.SignIn}>

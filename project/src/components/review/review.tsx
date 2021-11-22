@@ -1,12 +1,34 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Film } from '../../types/film';
 import CommentForm from '../comment-form/comment-form';
+import {State} from '../../types/state';
+import { Dispatch } from 'redux';
+import { Actions } from '../../types/action';
+import { requireLogout } from '../../store/action';
+import { connect, ConnectedProps} from 'react-redux';
 
 type Props = {
   film:Film;
 }
 
-function Review({film} : Props): JSX.Element {
+const mapStateToProps = ({userLogin}: State) => ({
+  userLogin,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  onLogout() {
+    dispatch(requireLogout());
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type ConnectedComponentProps = PropsFromRedux & Props;
+
+function Review({film, userLogin, onLogout} : ConnectedComponentProps): JSX.Element {
+  const onAuthClick = () => {
+    onLogout();
+  };
   return (
     <section className="film-card film-card--full">
       <div className="film-card__header">
@@ -43,20 +65,21 @@ function Review({film} : Props): JSX.Element {
               </div>
             </li>
             <li className="user-block__item">
-              <a className="user-block__link">Sign out</a>
+              <a className="user-block__link" onClick={onAuthClick}>{userLogin}</a>
             </li>
           </ul>
         </header>
 
         <div className="film-card__poster film-card__poster--small">
-          <img src="img/the-grand-budapest-hotel-poster.jpg" alt="The Grand Budapest Hotel poster" width="218" height="327" />
+          <img src={film.posterImage} alt="The Grand Budapest Hotel poster" width="218" height="327" />
         </div>
       </div>
       <div className="add-review">
-        <CommentForm/>
+        <CommentForm id={film.id}/>
       </div>
     </section>
   );
 }
 
-export default Review;
+export {Review};
+export default connector(Review);

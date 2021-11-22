@@ -1,5 +1,6 @@
-import { ActionType, UpdateGenreAction, LoadFilmsAction} from '../types/action';
+import { LoadFilmAction, ActionType, UpdateGenreAction, LoadFilmsAction, LoadSimilarAction, LoadCommentsAction} from '../types/action';
 import { Film } from '../types/film';
+import { CommentReview } from '../types/comment';
 import { AuthorizationStatus } from '../const';
 
 export const updateGenre = (genre: string): UpdateGenreAction => ({
@@ -10,6 +11,21 @@ export const updateGenre = (genre: string): UpdateGenreAction => ({
 export const loadFilms = (films: Film[]) : LoadFilmsAction => ({
   type: ActionType.LoadFilms,
   payload: films,
+});
+
+export const loadFilm = (film: Film) : LoadFilmAction => ({
+  type: ActionType.LoadFilm,
+  payload: film,
+});
+
+export const loadSimilar = (films: Film[]) : LoadSimilarAction => ({
+  type: ActionType.LoadSimilar,
+  payload: films,
+});
+
+export const loadComments = (comments: CommentReview[]) : LoadCommentsAction => ({
+  type: ActionType.LoadComments,
+  payload: comments,
 });
 
 export const requireAuthorization = (authStatus: AuthorizationStatus) => ({

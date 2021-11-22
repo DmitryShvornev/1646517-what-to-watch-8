@@ -1,6 +1,5 @@
 import { Film } from '../../types/film';
 import { useHistory } from 'react-router-dom';
-import { AppRoute } from '../../const';
 import { MouseEvent } from 'react';
 import VideoPlayer from '../video-player/video-player';
 import { useRef, useState, useEffect } from 'react';
@@ -30,7 +29,8 @@ function FilmCard({ film }: Props): JSX.Element {
 
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
-    history.push(AppRoute.Film);
+    const id = evt.currentTarget.getAttribute('data-id');
+    history.push(`films/${id}`);
   };
 
   const onMouseOver = () => setIsPlaying(true);
@@ -43,7 +43,7 @@ function FilmCard({ film }: Props): JSX.Element {
         <VideoPlayer src={film.previewVideoLink} poster={posterImage} ref={videoRef} />
       </div>
       <h3 className="small-film-card__title">
-        <a className="small-film-card__link" href="blank.html" onClick={onClick}>{name}
+        <a className="small-film-card__link" href="blank.html" data-id={film.id} onClick={onClick}>{name}
         </a>
       </h3>
     </article>

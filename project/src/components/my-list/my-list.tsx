@@ -1,12 +1,34 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Film } from '../../types/film';
 import FilmsList from '../films-list/films-list';
+import {State} from '../../types/state';
+import { Dispatch } from 'redux';
+import { Actions } from '../../types/action';
+import { requireLogout } from '../../store/action';
+import { connect, ConnectedProps} from 'react-redux';
 
 type MyListProps = {
   films: Film[];
 }
 
-function MyList({films} : MyListProps): JSX.Element {
+const mapStateToProps = ({userLogin}: State) => ({
+  userLogin,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  onLogout() {
+    dispatch(requireLogout());
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type ConnectedComponentProps = PropsFromRedux & MyListProps;
+
+function MyList({films, onLogout, userLogin} : ConnectedComponentProps): JSX.Element {
+  const onAuthClick = () => {
+    onLogout();
+  };
   return (
     <div className="user-page">
       <header className="page-header user-page__head">
@@ -27,7 +49,7 @@ function MyList({films} : MyListProps): JSX.Element {
             </div>
           </li>
           <li className="user-block__item">
-            <a className="user-block__link">Sign out</a>
+            <a className="user-block__link" onClick={onAuthClick}>{userLogin}</a>
           </li>
         </ul>
       </header>
@@ -52,4 +74,5 @@ function MyList({films} : MyListProps): JSX.Element {
   );
 }
 
-export default MyList;
+export {MyList};
+export default connector(MyList);

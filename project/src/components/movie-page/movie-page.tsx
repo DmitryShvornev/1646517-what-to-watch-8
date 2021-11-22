@@ -1,37 +1,73 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { useHistory } from 'react-router-dom';
-import { AppRoute } from '../../const';
-import { MouseEvent, useState } from 'react';
-import { Film } from '../../types/film';
+import { useHistory, useParams } from 'react-router-dom';
+import { AppRoute, AuthorizationStatus } from '../../const';
+import { MouseEvent, useState, useEffect } from 'react';
 import Tabs from '../tabs/tabs';
+import {State} from '../../types/state';
 import FilmsList from '../films-list/films-list';
+import NotFound from '../not-found/not-found';
+import { connect, ConnectedProps, useStore } from 'react-redux';
+import {fetchFilmAction, fetchSimilarAction, fetchCommentsAction} from '../../store/api-actions';
+import {ThunkAppDispatch} from '../../types/action';
+import { requireLogout } from '../../store/action';
+import { Dispatch } from 'redux';
+import { Actions } from '../../types/action';
 
-type Props = {
-  film: Film;
-  allFilms: Film[];
-}
 
-const MORE_FILMS_COUNT = 4;
+const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userLogin, films}: State) => ({
+  currentFilm,
+  similarFilms,
+  authorizationStatus,
+  userLogin,
+  films,
+});
 
-function MoviePage({ film, allFilms }: Props): JSX.Element {
+const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
+  onLogout() {
+    dispatch(requireLogout());
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, onLogout, films}: PropsFromRedux): JSX.Element {
+  const store = useStore();
+  // eslint-disable-next-line
+  const {id} : any = useParams();
+  useEffect(() => {
+    (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
+    (store.dispatch as ThunkAppDispatch)(fetchSimilarAction(Number(id)));
+    (store.dispatch as ThunkAppDispatch)(fetchCommentsAction(Number(id)));
+  }, [id, store.dispatch]);
   const history = useHistory();
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
-    history.push(AppRoute.AddReview);
+    history.push(`${AppRoute.Film}/${currentFilm.id}/${AppRoute.AddReview}`);
   };
-  const moreLikeThisFilms = allFilms.filter((item) => item.genre === film.genre && item.id !== film.id).slice(0, MORE_FILMS_COUNT);
   const [state, setState] = useState('Overview');
+  if (films.find((item) => item.id === Number(id)) === undefined && id !== -1) {
+    return <NotFound/>;
+  }
   const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     const option = evt.currentTarget.getAttribute('data-option') || '';
     setState(option);
+  };
+  const onAuthClick = () => {
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      onLogout();
+    }
+    else {
+      history.push(AppRoute.SignIn);
+    }
   };
   return (
     <>
       <section className="film-card film-card--full">
         <div className="film-card__hero">
           <div className="film-card__bg">
-            <img src={film.backgroundImage} alt={film.name} />
+            <img src={currentFilm.backgroundImage} alt={currentFilm.name} />
           </div>
 
           <h1 className="visually-hidden">WTW</h1>
@@ -52,17 +88,17 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
                 </div>
               </li>
               <li className="user-block__item">
-                <a className="user-block__link">Sign out</a>
+                <a className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? `${userLogin}`:'Sign in'}</a>
               </li>
             </ul>
           </header>
 
           <div className="film-card__wrap">
             <div className="film-card__desc">
-              <h2 className="film-card__title">{film.name}</h2>
+              <h2 className="film-card__title">{currentFilm.name}</h2>
               <p className="film-card__meta">
-                <span className="film-card__genre">{film.genre}</span>
-                <span className="film-card__year">{film.released}</span>
+                <span className="film-card__genre">{currentFilm.genre}</span>
+                <span className="film-card__year">{currentFilm.released}</span>
               </p>
 
               <div className="film-card__buttons">
@@ -78,7 +114,7 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
                   </svg>
                   <span>My list</span>
                 </button>
-                <a href="add-review.html" className="btn film-card__button" onClick={onClick}>Add review
+                <a href="add-review.html" className="btn film-card__button" style={authorizationStatus === AuthorizationStatus.NoAuth ? {display: 'none'}:{}} onClick={onClick}>Add review
                 </a>
               </div>
             </div>
@@ -88,7 +124,7 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
         <div className="film-card__wrap film-card__translate-top">
           <div className="film-card__info">
             <div className="film-card__poster film-card__poster--big">
-              <img src={film.posterImage} alt={film.name} width="218" height="327" />
+              <img src={currentFilm.posterImage} alt={currentFilm.name} width="218" height="327" />
             </div>
 
             <div className="film-card__desc">
@@ -106,7 +142,7 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
                 </ul>
               </nav>
 
-              <Tabs option={state} film={film}/>
+              <Tabs option={state} film={currentFilm}/>
             </div>
           </div>
         </div>
@@ -116,7 +152,7 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
         <section className="catalog catalog--like-this">
           <h2 className="catalog__title">More like this</h2>
 
-          <FilmsList films={moreLikeThisFilms}/>
+          <FilmsList films={similarFilms}/>
         </section>
 
         <footer className="page-footer">
@@ -137,4 +173,5 @@ function MoviePage({ film, allFilms }: Props): JSX.Element {
   );
 }
 
-export default MoviePage;
+export {MoviePage};
+export default connector(MoviePage);

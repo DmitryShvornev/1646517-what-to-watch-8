@@ -7,7 +7,7 @@ import {State} from '../../types/state';
 import FilmsList from '../films-list/films-list';
 import NotFound from '../not-found/not-found';
 import { connect, ConnectedProps, useStore } from 'react-redux';
-import {fetchFilmAction, fetchSimilarAction, fetchCommentsAction} from '../../store/api-actions';
+import {fetchFilmAction, fetchSimilarAction, fetchCommentsAction, changeFavoritesAction} from '../../store/api-actions';
 import {ThunkAppDispatch} from '../../types/action';
 import { requireLogout } from '../../store/action';
 import { Dispatch } from 'redux';
@@ -45,6 +45,14 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
     evt.preventDefault();
     history.push(`${AppRoute.Film}/${currentFilm.id}/${AppRoute.AddReview}`);
   };
+  const onListButtonClick = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    (store.dispatch as ThunkAppDispatch)(changeFavoritesAction(currentFilm.id, !currentFilm.isFavorite));
+  };
+  const onPlayClick = (evt: MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    history.push(`${AppRoute.Player}/${currentFilm.id}`);
+  };
   const [state, setState] = useState('Overview');
   if (films.find((item) => item.id === Number(id)) === undefined && id !== -1) {
     return <NotFound/>;
@@ -62,6 +70,10 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
       history.push(AppRoute.SignIn);
     }
   };
+  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.replace('/');
+  };
   return (
     <>
       <section className="film-card film-card--full">
@@ -74,7 +86,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
 
           <header className="page-header film-card__head">
             <div className="logo">
-              <a href="main.html" className="logo__link">
+              <a href="main.html" className="logo__link" onClick={onLogoClick}>
                 <span className="logo__letter logo__letter--1">W</span>
                 <span className="logo__letter logo__letter--2">T</span>
                 <span className="logo__letter logo__letter--3">W</span>
@@ -102,15 +114,15 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
               </p>
 
               <div className="film-card__buttons">
-                <button className="btn btn--play film-card__button" type="button">
+                <button className="btn btn--play film-card__button" type="button" onClick={onPlayClick}>
                   <svg viewBox="0 0 19 19" width="19" height="19">
                     <use xlinkHref="#play-s"></use>
                   </svg>
                   <span>Play</span>
                 </button>
-                <button className="btn btn--list film-card__button" type="button">
+                <button className="btn btn--list film-card__button" type="button" onClick={onListButtonClick}>
                   <svg viewBox="0 0 19 20" width="19" height="20">
-                    <use xlinkHref="#add"></use>
+                    <use xlinkHref={ currentFilm.isFavorite ? '#in-list':'#add'}></use>
                   </svg>
                   <span>My list</span>
                 </button>
@@ -157,7 +169,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
 
         <footer className="page-footer">
           <div className="logo">
-            <a href="main.html" className="logo__link logo__link--light">
+            <a href="main.html" className="logo__link logo__link--light" onClick={onLogoClick}>
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>

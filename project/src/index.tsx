@@ -8,7 +8,7 @@ import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import {createAPI} from './api';
 import {requireAuthorization} from './store/action';
-import {fetchFilmsAction, checkAuthAction} from './store/api-actions';
+import {fetchFilmsAction, checkAuthAction, fetchFavoritesAction} from './store/api-actions';
 import {ThunkAppDispatch} from './types/action';
 import {AuthorizationStatus} from './const';
 import {ToastContainer} from 'react-toastify';
@@ -22,6 +22,7 @@ const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk.wit
 
 (store.dispatch as ThunkAppDispatch)(checkAuthAction());
 (store.dispatch as ThunkAppDispatch)(fetchFilmsAction());
+(store.dispatch as ThunkAppDispatch)(fetchFavoritesAction());
 
 ReactDOM.render(
   <React.StrictMode>

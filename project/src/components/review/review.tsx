@@ -1,18 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Film } from '../../types/film';
 import CommentForm from '../comment-form/comment-form';
 import {State} from '../../types/state';
 import { Dispatch } from 'redux';
 import { Actions } from '../../types/action';
 import { requireLogout } from '../../store/action';
-import { connect, ConnectedProps} from 'react-redux';
+import { connect, ConnectedProps, useStore} from 'react-redux';
+import {fetchFilmAction} from '../../store/api-actions';
+import {ThunkAppDispatch} from '../../types/action';
+import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
-type Props = {
-  film:Film;
-}
-
-const mapStateToProps = ({userLogin}: State) => ({
+const mapStateToProps = ({userLogin, currentFilm}: State) => ({
   userLogin,
+  currentFilm,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
@@ -23,9 +23,15 @@ const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedComponentProps = PropsFromRedux & Props;
 
-function Review({film, userLogin, onLogout} : ConnectedComponentProps): JSX.Element {
+function Review(props : PropsFromRedux): JSX.Element {
+  const {currentFilm, userLogin, onLogout} = props;
+  const store = useStore();
+  // eslint-disable-next-line
+  const {id} : any = useParams();
+  useEffect(() => {
+    (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
+  }, [id, store.dispatch]);
   const onAuthClick = () => {
     onLogout();
   };
@@ -33,7 +39,7 @@ function Review({film, userLogin, onLogout} : ConnectedComponentProps): JSX.Elem
     <section className="film-card film-card--full">
       <div className="film-card__header">
         <div className="film-card__bg">
-          <img src={film.backgroundImage} alt={film.name} />
+          <img src={currentFilm.backgroundImage} alt={currentFilm.name} />
         </div>
 
         <h1 className="visually-hidden">WTW</h1>
@@ -50,7 +56,7 @@ function Review({film, userLogin, onLogout} : ConnectedComponentProps): JSX.Elem
           <nav className="breadcrumbs">
             <ul className="breadcrumbs__list">
               <li className="breadcrumbs__item">
-                <a href="film-page.html" className="breadcrumbs__link">{film.name}</a>
+                <a href="film-page.html" className="breadcrumbs__link">{currentFilm.name}</a>
               </li>
               <li className="breadcrumbs__item">
                 <a className="breadcrumbs__link">Add review</a>
@@ -71,11 +77,11 @@ function Review({film, userLogin, onLogout} : ConnectedComponentProps): JSX.Elem
         </header>
 
         <div className="film-card__poster film-card__poster--small">
-          <img src={film.posterImage} alt="The Grand Budapest Hotel poster" width="218" height="327" />
+          <img src={currentFilm.posterImage} alt="The Grand Budapest Hotel poster" width="218" height="327" />
         </div>
       </div>
       <div className="add-review">
-        <CommentForm id={film.id}/>
+        <CommentForm id={currentFilm.id}/>
       </div>
     </section>
   );

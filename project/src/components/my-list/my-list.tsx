@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Film } from '../../types/film';
 import FilmsList from '../films-list/films-list';
 import {State} from '../../types/state';
 import { Dispatch } from 'redux';
@@ -7,12 +6,10 @@ import { Actions } from '../../types/action';
 import { requireLogout } from '../../store/action';
 import { connect, ConnectedProps} from 'react-redux';
 
-type MyListProps = {
-  films: Film[];
-}
 
-const mapStateToProps = ({userLogin}: State) => ({
+const mapStateToProps = ({userLogin, favoriteFilms}: State) => ({
   userLogin,
+  favoriteFilms,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
@@ -23,9 +20,9 @@ const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
-type ConnectedComponentProps = PropsFromRedux & MyListProps;
 
-function MyList({films, onLogout, userLogin} : ConnectedComponentProps): JSX.Element {
+function MyList(props : PropsFromRedux): JSX.Element {
+  const {favoriteFilms, onLogout, userLogin} = props;
   const onAuthClick = () => {
     onLogout();
   };
@@ -55,7 +52,7 @@ function MyList({films, onLogout, userLogin} : ConnectedComponentProps): JSX.Ele
       </header>
       <section className="catalog">
         <h2 className="catalog__title visually-hidden">Catalog</h2>
-        <FilmsList films={films}/>
+        <FilmsList films={favoriteFilms}/>
       </section>
       <footer className="page-footer">
         <div className="logo">

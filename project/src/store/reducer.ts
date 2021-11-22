@@ -33,6 +33,7 @@ const initialState: State = {
   authorizationStatus: AuthorizationStatus.Unknown,
   isDataLoaded: false,
   userLogin: '',
+  favoriteFilms: [],
 };
 
 const reducer = (state: State = initialState, action: Actions): State => {
@@ -55,6 +56,10 @@ const reducer = (state: State = initialState, action: Actions): State => {
       return { ...state, authorizationStatus: AuthorizationStatus.NoAuth };
     case ActionType.RequireLogin:
       return {...state, userLogin: action.payload};
+    case ActionType.ChangeList:
+      return {...state, currentFilm: {...state.currentFilm, isFavorite : action.payload}};
+    case ActionType.LoadFavorites:
+      return {...state, favoriteFilms: action.payload};
     default:
       return state;
   }

@@ -30,7 +30,7 @@ function FilmCard({ film }: Props): JSX.Element {
   const onClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     const id = evt.currentTarget.getAttribute('data-id');
-    history.push(`films/${id}`);
+    history.push(`/films/${id}`);
   };
 
   const onMouseOver = () => setIsPlaying(true);

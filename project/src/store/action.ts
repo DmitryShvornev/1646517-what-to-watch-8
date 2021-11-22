@@ -1,7 +1,12 @@
-import { LoadFilmAction, ActionType, UpdateGenreAction, LoadFilmsAction, LoadSimilarAction, LoadCommentsAction} from '../types/action';
+import { LoadFilmAction, ActionType, UpdateGenreAction, LoadFilmsAction, LoadSimilarAction, LoadCommentsAction, ChangeListAction, LoadFavoritesAction} from '../types/action';
 import { Film } from '../types/film';
 import { CommentReview } from '../types/comment';
 import { AuthorizationStatus } from '../const';
+
+export const changeList = (condition: boolean) : ChangeListAction => ({
+  type: ActionType.ChangeList,
+  payload: condition,
+});
 
 export const updateGenre = (genre: string): UpdateGenreAction => ({
   type: ActionType.UpdateGenre,
@@ -10,6 +15,11 @@ export const updateGenre = (genre: string): UpdateGenreAction => ({
 
 export const loadFilms = (films: Film[]) : LoadFilmsAction => ({
   type: ActionType.LoadFilms,
+  payload: films,
+});
+
+export const loadFavorites = (films: Film[]) : LoadFavoritesAction => ({
+  type: ActionType.LoadFavorites,
   payload: films,
 });
 

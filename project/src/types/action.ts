@@ -16,6 +16,12 @@ export enum ActionType {
   LoadComments = 'data/loadComments',
   ChangeList = 'user/changeList',
   LoadFavorites = 'data/loadFavorites',
+  LoadPromo = 'data/loadPromo',
+}
+
+export type LoadPromoAction = {
+  type: ActionType.LoadPromo;
+  payload: Film;
 }
 
 export type ChangeListAction = {
@@ -68,6 +74,6 @@ export type LoadCommentsAction = {
 }
 
 
-export type Actions = UpdateGenreAction | LoadFilmsAction | RequireAuthorizationAction | RequireLogoutAction | RequireLoginAction | LoadFilmAction | LoadSimilarAction | LoadCommentsAction | ChangeListAction | LoadFavoritesAction;
+export type Actions = UpdateGenreAction | LoadFilmsAction | RequireAuthorizationAction | RequireLogoutAction | RequireLoginAction | LoadFilmAction | LoadSimilarAction | LoadCommentsAction | ChangeListAction | LoadFavoritesAction | LoadPromoAction;
 export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
 export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;

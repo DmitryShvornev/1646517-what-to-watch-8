@@ -1,5 +1,5 @@
 import { ThunkActionResult } from '../types/action';
-import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites } from './action';
+import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo } from './action';
 import { saveToken, dropToken, Token } from '../token';
 import { APIRoute, AuthorizationStatus } from '../const';
 import { Film } from '../types/film';
@@ -56,6 +56,12 @@ export const fetchFilmAction = (id: number): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
     const { data } = await api.get<Film>(`${APIRoute.Films}/${id}`);
     dispatch(loadFilm(adaptToClient(data)));
+  };
+
+export const fetchPromoAction = (): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<Film>('/promo');
+    dispatch(loadPromo(adaptToClient(data)));
   };
 
 export const fetchSimilarAction = (id: number): ThunkActionResult =>

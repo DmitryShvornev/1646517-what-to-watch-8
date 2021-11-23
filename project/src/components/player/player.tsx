@@ -5,10 +5,6 @@ import {ThunkAppDispatch} from '../../types/action';
 import { connect, ConnectedProps, useStore } from 'react-redux';
 import {State} from '../../types/state';
 
-const PlayerStyle = {
-  left: '0%',
-};
-
 const mapStateToProps = ({currentFilm}: State) => ({
   currentFilm,
 });
@@ -49,6 +45,10 @@ function Player(props : PropsFromRedux) : JSX.Element {
     evt.preventDefault();
     history.goBack();
   };
+  const onFullScreenClick = (evt : MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
+    videoRef.current?.requestFullscreen();
+  };
   return (
     <div className="player">
       <video src={currentFilm.videoLink} className="player__video" poster={currentFilm.posterImage} ref={videoRef}></video>
@@ -59,7 +59,7 @@ function Player(props : PropsFromRedux) : JSX.Element {
         <div className="player__controls-row">
           <div className="player__time">
             <progress className="player__progress" value="0" max="100"></progress>
-            <div className="player__toggler" style={PlayerStyle}>Toggler</div>
+            <div className="player__toggler" style={{left: '0%'}}>Toggler</div>
           </div>
           <div className="player__time-value">{`${Math.floor(currentFilm.runTime / 60)}:${currentFilm.runTime % 60}`}</div>
         </div>
@@ -73,7 +73,7 @@ function Player(props : PropsFromRedux) : JSX.Element {
           </button>
           <div className="player__name">Transpotting</div>
 
-          <button type="button" className="player__full-screen">
+          <button type="button" className="player__full-screen" onClick={onFullScreenClick}>
             <svg viewBox="0 0 27 27" width="27" height="27">
               <use xlinkHref="#full-screen"></use>
             </svg>

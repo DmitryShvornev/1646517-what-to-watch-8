@@ -1,12 +1,12 @@
 import { ThunkActionResult } from '../types/action';
-import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments } from './action';
+import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo } from './action';
 import { saveToken, dropToken, Token } from '../token';
 import { APIRoute, AuthorizationStatus } from '../const';
 import { Film } from '../types/film';
 import { CommentReview } from '../types/comment';
 import { AuthData } from '../types/auth-data';
 import { CommentPost } from '../types/comment-post';
-import {toast} from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const AUTH_FAIL_MESSAGE = 'Не забудьте авторизоваться';
 const SEND_FAIL_MESSAGE = 'Не удалось отправить комментарий';
@@ -46,10 +46,22 @@ export const fetchFilmsAction = (): ThunkActionResult =>
     dispatch(loadFilms(data.map((item) => adaptToClient(item))));
   };
 
+export const fetchFavoritesAction = (): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<Film[]>(APIRoute.Favorite);
+    dispatch(loadFavorites(data.map((item) => adaptToClient(item))));
+  };
+
 export const fetchFilmAction = (id: number): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
     const { data } = await api.get<Film>(`${APIRoute.Films}/${id}`);
     dispatch(loadFilm(adaptToClient(data)));
+  };
+
+export const fetchPromoAction = (): ThunkActionResult =>
+  async (dispatch, _getState, api): Promise<void> => {
+    const { data } = await api.get<Film>('/promo');
+    dispatch(loadPromo(adaptToClient(data)));
   };
 
 export const fetchSimilarAction = (id: number): ThunkActionResult =>
@@ -82,7 +94,16 @@ export const loginAction = ({ login: email, password }: AuthData): ThunkActionRe
     dispatch(requireLogin(email));
   };
 
-export const postAction = (id : number, { rating, comment }: CommentPost): ThunkActionResult =>
+export const changeFavoritesAction = (id: number, condition: boolean): ThunkActionResult =>
+  async (dispatch, _getState, api) => {
+    await api.post(`${APIRoute.Favorite}/${id}/${Number(condition)}`)
+      .then((response) => {
+        dispatch(loadFilm(adaptToClient(response.data)));
+        dispatch(changeList(condition));
+      });
+  };
+
+export const postAction = (id: number, { rating, comment }: CommentPost): ThunkActionResult =>
   async (dispatch, _getState, api) => {
     try {
       const { data: { token } } = await api.post<{ token: Token }>(`/comments/${id}`, { comment, rating });

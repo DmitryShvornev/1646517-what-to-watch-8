@@ -12,10 +12,8 @@ import LoadingScreen from '../loading-screen/loading-screen';
 import {State} from '../../types/state';
 import {connect, ConnectedProps} from 'react-redux';
 
-const mapStateToProps = ({films, isDataLoaded, currentFilm}: State) => ({
-  films,
+const mapStateToProps = ({isDataLoaded}: State) => ({
   isDataLoaded,
-  currentFilm,
 });
 
 const connector = connect(mapStateToProps);
@@ -23,7 +21,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 
 function App(props: PropsFromRedux): JSX.Element {
-  const {films, isDataLoaded, currentFilm} = props;
+  const {isDataLoaded} = props;
 
   if (!isDataLoaded) {
     return (
@@ -40,13 +38,13 @@ function App(props: PropsFromRedux): JSX.Element {
         <PrivateRoute
           exact
           path={AppRoute.MyList}
-          render={() => <MyList films={films}/>}
+          render={() => <MyList/>}
         />
         <Route exact path={`${AppRoute.Player}/:id`}>
-          <Player film={currentFilm}/>
+          <Player/>
         </Route>
         <Route exact path={`${AppRoute.Film}/:id/${AppRoute.AddReview}`}>
-          <Review film={currentFilm}/>
+          <Review/>
         </Route>
         <Route exact path={AppRoute.SignIn}>
           <SignIn />

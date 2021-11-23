@@ -1,4 +1,4 @@
-import {useRef, FormEvent} from 'react';
+import {useRef, FormEvent, MouseEvent} from 'react';
 import {useHistory} from 'react-router-dom';
 import {connect, ConnectedProps} from 'react-redux';
 import {loginAction} from '../../store/api-actions';
@@ -34,11 +34,15 @@ function SignIn(props: PropsFromRedux): JSX.Element {
       history.push(AppRoute.Main);
     }
   };
+  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.replace('/');
+  };
   return (
     <div className="user-page">
       <header className="page-header user-page__head">
         <div className="logo">
-          <a href="main.html" className="logo__link">
+          <a href="main.html" className="logo__link" onClick={onLogoClick}>
             <span className="logo__letter logo__letter--1">W</span>
             <span className="logo__letter logo__letter--2">T</span>
             <span className="logo__letter logo__letter--3">W</span>

@@ -12,7 +12,12 @@ export type State = {
   titlePromo: string;
   genrePromo: string;
   yearPromo: number;
+  posterPromo: string;
+  backgroundPromo: string;
+  idPromo: number;
+  isFavoritePromo: boolean;
   authorizationStatus: AuthorizationStatus;
   isDataLoaded: boolean;
   userLogin: string;
+  favoriteFilms: Film[],
 }

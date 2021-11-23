@@ -90,9 +90,11 @@ export const loginAction = ({ login: email, password }: AuthData): ThunkActionRe
 
 export const changeFavoritesAction = (id: number, condition: boolean): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    const { data: { token } } = await api.post<{ token: Token }>(`${APIRoute.Favorite}/${id}/${Number(condition)}`);
-    saveToken(token);
-    dispatch(changeList(condition));
+    await api.post(`${APIRoute.Favorite}/${id}/${Number(condition)}`)
+      .then((response) => {
+        dispatch(loadFilm(adaptToClient(response.data)));
+        dispatch(changeList(condition));
+      });
   };
 
 export const postAction = (id: number, { rating, comment }: CommentPost): ThunkActionResult =>

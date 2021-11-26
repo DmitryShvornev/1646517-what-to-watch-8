@@ -5,7 +5,7 @@ type Props = {
 }
 
 function CommentCard({comment}: Props): JSX.Element {
-  const date = new Date(comment.date).toDateString();
+  const date = new Date(comment.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   return (
     <div className="review">
       <blockquote className="review__quote">
@@ -13,7 +13,7 @@ function CommentCard({comment}: Props): JSX.Element {
 
         <footer className="review__details">
           <cite className="review__author">{comment.user.name}</cite>
-          <time className="review__date" dateTime={comment.date}>{date}</time>
+          <time className="review__date">{date}</time>
         </footer>
       </blockquote>
 

@@ -24,3 +24,5 @@ export enum APIRoute {
   Login = '/login',
   Logout = '/logout',
 }
+
+export const FILM_RENDER_COUNT = 8;

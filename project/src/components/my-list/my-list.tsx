@@ -2,14 +2,20 @@
 import FilmsList from '../films-list/films-list';
 import {State} from '../../types/state';
 import { Dispatch } from 'redux';
-import { Actions } from '../../types/action';
+import { Actions, ThunkAppDispatch } from '../../types/action';
 import { requireLogout } from '../../store/action';
-import { connect, ConnectedProps} from 'react-redux';
+import { connect, ConnectedProps, useStore} from 'react-redux';
+import { AuthorizationStatus } from '../../const';
+import { MouseEvent, useEffect } from 'react';
+import { useHistory } from 'react-router';
+import { fetchFavoritesAction } from '../../store/api-actions';
 
 
-const mapStateToProps = ({userLogin, favoriteFilms}: State) => ({
+const mapStateToProps = ({userLogin, favoriteFilms, authorizationStatus, userAvatar}: State) => ({
   userLogin,
+  userAvatar,
   favoriteFilms,
+  authorizationStatus,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
@@ -22,15 +28,24 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function MyList(props : PropsFromRedux): JSX.Element {
-  const {favoriteFilms, onLogout, userLogin} = props;
+  const {favoriteFilms, onLogout, userLogin, userAvatar, authorizationStatus} = props;
+  const history = useHistory();
+  const store = useStore();
   const onAuthClick = () => {
     onLogout();
+  };
+  useEffect(() => {
+    (store.dispatch as ThunkAppDispatch)(fetchFavoritesAction());
+  });
+  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.replace('/');
   };
   return (
     <div className="user-page">
       <header className="page-header user-page__head">
         <div className="logo">
-          <a href="main.html" className="logo__link">
+          <a href="main.html" className="logo__link" onClick={onLogoClick}>
             <span className="logo__letter logo__letter--1">W</span>
             <span className="logo__letter logo__letter--2">T</span>
             <span className="logo__letter logo__letter--3">W</span>
@@ -41,8 +56,8 @@ function MyList(props : PropsFromRedux): JSX.Element {
 
         <ul className="user-block">
           <li className="user-block__item">
-            <div className="user-block__avatar">
-              <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
+            <div className="user-block__avatar" style={authorizationStatus === AuthorizationStatus.Auth ? {} : {display : 'none'}}>
+              <img src={userAvatar} alt="User avatar" width="63" height="63" />
             </div>
           </li>
           <li className="user-block__item">

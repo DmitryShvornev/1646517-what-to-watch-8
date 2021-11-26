@@ -1,40 +1,51 @@
-import {useRef, FormEvent, MouseEvent} from 'react';
-import {useHistory} from 'react-router-dom';
-import {connect, ConnectedProps} from 'react-redux';
-import {loginAction} from '../../store/api-actions';
-import {ThunkAppDispatch} from '../../types/action';
-import {AuthData} from '../../types/auth-data';
-import {AppRoute} from '../../const';
+import { useRef, FormEvent, MouseEvent, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { connect, ConnectedProps } from 'react-redux';
+import { loginAction } from '../../store/api-actions';
+import { ThunkAppDispatch } from '../../types/action';
+import { AuthData } from '../../types/auth-data';
+import { AppRoute } from '../../const';
+
+const EMAIL_REGULAR_EXPR = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+const PASSWORD_REGULAR_EXPR = /[a-z]\d|\d[a-z]/i;
 
 const mapDispatchToProps = (dispatch: ThunkAppDispatch) => ({
-  onSubmit(authData: AuthData) {
-    dispatch(loginAction(authData));
+  onSubmit(authData: AuthData, callback : () => void) {
+    dispatch(loginAction(authData, callback));
   },
 });
+
 
 const connector = connect(null, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function SignIn(props: PropsFromRedux): JSX.Element {
-  const {onSubmit} = props;
+  const { onSubmit } = props;
   const loginRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
-
+  const [isValid, setIsValid] = useState(true);
   const history = useHistory();
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
     if (loginRef.current !== null && passwordRef.current !== null) {
-      onSubmit({
-        login: loginRef.current.value,
-        password: passwordRef.current.value,
-      });
-      history.push(AppRoute.Main);
+      const emailValidCondition = EMAIL_REGULAR_EXPR.test(String(loginRef.current.value));
+      const passwordValidCondition = PASSWORD_REGULAR_EXPR.test(String(passwordRef.current.value));
+      if (emailValidCondition && passwordValidCondition) {
+        setIsValid(true);
+        onSubmit({
+          login: loginRef.current.value,
+          password: passwordRef.current.value,
+        }, () => history.push(AppRoute.Main));
+      }
+      else {
+        setIsValid(false);
+      }
     }
   };
-  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+  const onLogoClick = (evt: MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     history.replace('/');
   };
@@ -53,6 +64,9 @@ function SignIn(props: PropsFromRedux): JSX.Element {
       </header>
       <div className="sign-in user-page__content">
         <form action="#" className="sign-in__form" onSubmit={handleSubmit}>
+          <div className="sign-in__message" style={isValid === true ? { display: 'none' } : {}}>
+            <p>Please enter a valid email address and a valid password</p>
+          </div>
           <div className="sign-in__fields">
             <div className="sign-in__field">
               <input className="sign-in__input" ref={loginRef} type="email" placeholder="Email address" name="user-email" id="user-email" />
@@ -85,5 +99,5 @@ function SignIn(props: PropsFromRedux): JSX.Element {
   );
 }
 
-export {SignIn };
+export { SignIn };
 export default connector(SignIn);

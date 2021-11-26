@@ -39,7 +39,7 @@ function FilmCard({ film }: Props): JSX.Element {
 
   return (
     <article className="small-film-card catalog__films-card" onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-      <div className="small-film-card__image">
+      <div className="small-film-card__image" onClick={() => history.push(`/films/${film.id}`)}>
         <VideoPlayer src={film.previewVideoLink} poster={posterImage} ref={videoRef} />
       </div>
       <h3 className="small-film-card__title">

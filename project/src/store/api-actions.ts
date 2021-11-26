@@ -1,6 +1,6 @@
 import { ThunkActionResult } from '../types/action';
-import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo } from './action';
-import { saveToken, dropToken, Token } from '../token';
+import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo, requireAvatar } from './action';
+import { saveToken, dropToken } from '../token';
 import { APIRoute, AuthorizationStatus } from '../const';
 import { Film } from '../types/film';
 import { CommentReview } from '../types/comment';
@@ -8,8 +8,10 @@ import { AuthData } from '../types/auth-data';
 import { CommentPost } from '../types/comment-post';
 import { toast } from 'react-toastify';
 
+
 const AUTH_FAIL_MESSAGE = 'Не забудьте авторизоваться';
 const SEND_FAIL_MESSAGE = 'Не удалось отправить комментарий';
+const ACTION_FAIL_MESSAGE = 'Сервер недоступен';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function adaptToClient(film: any) {
@@ -60,8 +62,12 @@ export const fetchFilmAction = (id: number): ThunkActionResult =>
 
 export const fetchPromoAction = (): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
-    const { data } = await api.get<Film>('/promo');
-    dispatch(loadPromo(adaptToClient(data)));
+    try {
+      const { data } = await api.get<Film>('/promo');
+      dispatch(loadPromo(adaptToClient(data)));
+    } catch {
+      toast.info(ACTION_FAIL_MESSAGE);
+    }
   };
 
 export const fetchSimilarAction = (id: number): ThunkActionResult =>
@@ -72,26 +78,39 @@ export const fetchSimilarAction = (id: number): ThunkActionResult =>
 
 export const fetchCommentsAction = (id: number): ThunkActionResult =>
   async (dispatch, _getState, api): Promise<void> => {
-    const { data } = await api.get<CommentReview[]>(`comments/${id}`);
-    dispatch(loadComments(data));
+    try {
+      const { data } = await api.get<CommentReview[]>(`comments/${id}`);
+      dispatch(loadComments(data));
+    } catch {
+      toast.info(ACTION_FAIL_MESSAGE);
+    }
   };
 
 export const checkAuthAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
     try {
-      await api.get(APIRoute.Login);
+      await api.get(APIRoute.Login).then((response) => {
+        dispatch(requireLogin(response.data.email));
+        dispatch(requireAvatar(response.data['avatar_url']));
+      });
       dispatch(requireAuthorization(AuthorizationStatus.Auth));
     } catch {
       toast.info(AUTH_FAIL_MESSAGE);
     }
   };
 
-export const loginAction = ({ login: email, password }: AuthData): ThunkActionResult =>
+export const loginAction = ({ login: email, password }: AuthData, callback : () => void): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    const { data: { token } } = await api.post<{ token: Token }>(APIRoute.Login, { email, password });
-    saveToken(token);
-    dispatch(requireAuthorization(AuthorizationStatus.Auth));
-    dispatch(requireLogin(email));
+    await api.post(APIRoute.Login, { email, password })
+      .then((response) => {
+        saveToken(response.data.token);
+        dispatch(requireAuthorization(AuthorizationStatus.Auth));
+        dispatch(requireLogin(response.data.email));
+        dispatch(requireAvatar(response.data['avatar_url']));
+        callback();
+      }).catch(() => {
+        toast.info(ACTION_FAIL_MESSAGE);
+      });
   };
 
 export const changeFavoritesAction = (id: number, condition: boolean): ThunkActionResult =>
@@ -100,24 +119,30 @@ export const changeFavoritesAction = (id: number, condition: boolean): ThunkActi
       .then((response) => {
         dispatch(loadFilm(adaptToClient(response.data)));
         dispatch(changeList(condition));
+        dispatch(fetchPromoAction());
       });
   };
 
-export const postAction = (id: number, { rating, comment }: CommentPost): ThunkActionResult =>
+export const postAction = (id: number, { rating, comment }: CommentPost, callbackSuccess : () => void, callbackFailure : () => void): ThunkActionResult =>
   async (dispatch, _getState, api) => {
     try {
-      const { data: { token } } = await api.post<{ token: Token }>(`/comments/${id}`, { comment, rating });
-      saveToken(token);
+      await api.post(`/comments/${id}`, { comment, rating });
       dispatch(fetchCommentsAction(id));
+      callbackSuccess();
     } catch {
       toast.info(SEND_FAIL_MESSAGE);
+      callbackFailure();
     }
   };
 
 
 export const logoutAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
-    api.delete(APIRoute.Logout);
-    dropToken();
-    dispatch(requireLogout());
+    try {
+      api.delete(APIRoute.Logout);
+      dropToken();
+      dispatch(requireLogout());
+    } catch {
+      toast.info(AUTH_FAIL_MESSAGE);
+    }
   };

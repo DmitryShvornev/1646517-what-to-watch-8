@@ -20,6 +20,18 @@ type ConnectedComponentProps = PropsFromRedux & Props;
 
 function Tabs({ option, film, commentsList }: ConnectedComponentProps): JSX.Element {
   let component : JSX.Element = (<div></div>);
+  let ratingLevel  = '';
+  if (film.rating < 3) {
+    ratingLevel = 'Bad';
+  } else if (film.rating >= 3 && film.rating < 5) {
+    ratingLevel = 'Normal';
+  } else if (film.rating >= 5 && film.rating < 8) {
+    ratingLevel = 'Good';
+  } else if (film.rating >= 8 && film.rating < 10) {
+    ratingLevel = 'Very good';
+  } else if (film.rating === 10) {
+    ratingLevel = 'Awesome';
+  }
   switch (option) {
     case 'Overview':
       component =  (
@@ -27,7 +39,7 @@ function Tabs({ option, film, commentsList }: ConnectedComponentProps): JSX.Elem
           <div className="film-rating">
             <div className="film-rating__score">{film.rating}</div>
             <p className="film-rating__meta">
-              <span className="film-rating__level">Very good</span>
+              <span className="film-rating__level">{ratingLevel}</span>
               <span className="film-rating__count">{film.scoresCount} ratings</span>
             </p>
           </div>
@@ -79,6 +91,7 @@ function Tabs({ option, film, commentsList }: ConnectedComponentProps): JSX.Elem
       component = (
         <div className="film-card__reviews film-card__row">
           <div className="film-card__reviews-col">
+            {commentsList === [] ? <p>Comments are unavaliable</p> : <p></p>}
             {commentsList.map((item) => (<CommentCard key={item.id} comment={item}/>))}
           </div>
         </div>

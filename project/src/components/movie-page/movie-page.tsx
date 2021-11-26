@@ -13,12 +13,15 @@ import { requireLogout } from '../../store/action';
 import { Dispatch } from 'redux';
 import { Actions } from '../../types/action';
 
+const SIMILAR_COUNT = 4;
 
-const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userLogin, films}: State) => ({
+
+const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userLogin, userAvatar, films}: State) => ({
   currentFilm,
   similarFilms,
   authorizationStatus,
   userLogin,
+  userAvatar,
   films,
 });
 
@@ -31,7 +34,7 @@ const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, onLogout, films}: PropsFromRedux): JSX.Element {
+function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, userAvatar, onLogout, films}: PropsFromRedux): JSX.Element {
   const store = useStore();
   // eslint-disable-next-line
   const {id} : any = useParams();
@@ -47,7 +50,11 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
   };
   const onListButtonClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
-    (store.dispatch as ThunkAppDispatch)(changeFavoritesAction(currentFilm.id, !currentFilm.isFavorite));
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      (store.dispatch as ThunkAppDispatch)(changeFavoritesAction(currentFilm.id, !currentFilm.isFavorite));
+    } else {
+      history.push(AppRoute.SignIn);
+    }
   };
   const onPlayClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
@@ -95,8 +102,8 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
 
             <ul className="user-block">
               <li className="user-block__item">
-                <div className="user-block__avatar">
-                  <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
+                <div className="user-block__avatar" onClick={() => history.push(AppRoute.MyList)} style={authorizationStatus === AuthorizationStatus.Auth ? {} : {display : 'none'}}>
+                  <img src={userAvatar} alt="User avatar" width="63" height="63" />
                 </div>
               </li>
               <li className="user-block__item">
@@ -164,7 +171,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
         <section className="catalog catalog--like-this">
           <h2 className="catalog__title">More like this</h2>
 
-          <FilmsList films={similarFilms}/>
+          <FilmsList films={similarFilms.slice(0, SIMILAR_COUNT)}/>
         </section>
 
         <footer className="page-footer">

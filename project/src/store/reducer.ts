@@ -36,7 +36,9 @@ const initialState: State = {
   isFavoritePromo: false,
   authorizationStatus: AuthorizationStatus.Unknown,
   isDataLoaded: false,
+  isFilmLoaded: false,
   userLogin: '',
+  userAvatar: '',
   favoriteFilms: [],
 };
 
@@ -49,23 +51,25 @@ const reducer = (state: State = initialState, action: Actions): State => {
     case ActionType.LoadFilms:
       return { ...state, films: action.payload, filmsBuffer: action.payload };
     case ActionType.LoadFilm:
-      return {...state, currentFilm: action.payload};
+      return { ...state, currentFilm: action.payload, isFilmLoaded: true };
     case ActionType.LoadSimilar:
-      return {...state, similarFilms: action.payload};
+      return { ...state, similarFilms: action.payload };
     case ActionType.LoadComments:
-      return {...state, commentsList: action.payload};
+      return { ...state, commentsList: action.payload };
     case ActionType.RequireAuthorization:
       return { ...state, authorizationStatus: action.payload, isDataLoaded: true };
     case ActionType.RequireLogout:
       return { ...state, authorizationStatus: AuthorizationStatus.NoAuth };
     case ActionType.RequireLogin:
-      return {...state, userLogin: action.payload};
+      return { ...state, userLogin: action.payload };
+    case ActionType.RequireAvatar:
+      return { ...state, userAvatar: action.payload };
     case ActionType.ChangeList:
-      return {...state, currentFilm: {...state.currentFilm, isFavorite : action.payload}};
+      return { ...state, currentFilm: { ...state.currentFilm, isFavorite: action.payload } };
     case ActionType.LoadFavorites:
-      return {...state, favoriteFilms: action.payload};
+      return { ...state, favoriteFilms: action.payload };
     case ActionType.LoadPromo:
-      return {...state, titlePromo: action.payload.name, genrePromo: action.payload.genre, yearPromo: action.payload.released, posterPromo: action.payload.posterImage, backgroundPromo: action.payload.backgroundImage, idPromo: action.payload.id, isFavoritePromo: action.payload.isFavorite};
+      return { ...state, titlePromo: action.payload.name, genrePromo: action.payload.genre, yearPromo: action.payload.released, posterPromo: action.payload.posterImage, backgroundPromo: action.payload.backgroundImage, idPromo: action.payload.id, isFavoritePromo: action.payload.isFavorite };
     default:
       return state;
   }

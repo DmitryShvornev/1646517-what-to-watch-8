@@ -3,7 +3,7 @@ import React, { useEffect, useState, MouseEvent } from 'react';
 import FilmsList from '../films-list/films-list';
 import GenreList from '../genre-list/genre-list';
 import { useHistory } from 'react-router-dom';
-import { AppRoute, AuthorizationStatus } from '../../const';
+import { AppRoute, AuthorizationStatus, FILM_RENDER_COUNT } from '../../const';
 import { Dispatch } from 'redux';
 import { connect, ConnectedProps, useStore } from 'react-redux';
 import { State } from '../../types/state';
@@ -12,9 +12,8 @@ import { updateGenre, requireLogout } from '../../store/action';
 import ShowMoreButton from '../show-more-button/show-more-button';
 import { changeFavoritesAction, fetchPromoAction } from '../../store/api-actions';
 
-const FILM_RENDER_COUNT = 8;
 
-const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer, authorizationStatus, isDataLoaded, userLogin, posterPromo, backgroundPromo, idPromo, isFavoritePromo}: State) => ({
+const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer, authorizationStatus, isDataLoaded, userLogin, posterPromo, backgroundPromo, idPromo, isFavoritePromo, userAvatar}: State) => ({
   genre,
   films,
   filmsBuffer,
@@ -28,12 +27,10 @@ const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, films
   authorizationStatus,
   isDataLoaded,
   userLogin,
+  userAvatar,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
-  onChangeGenre(genre: string) {
-    dispatch(updateGenre(genre));
-  },
   onLogout() {
     dispatch(requireLogout());
   },
@@ -45,7 +42,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 
 function MainPage(props: PropsFromRedux): JSX.Element {
-  const { idPromo, isFavoritePromo, titlePromo, genrePromo, yearPromo, posterPromo, backgroundPromo, films, filmsBuffer, onChangeGenre, genre, authorizationStatus, isDataLoaded, onLogout, userLogin } = props;
+  const { idPromo, isFavoritePromo, titlePromo, genrePromo, yearPromo, posterPromo, backgroundPromo, films, filmsBuffer, genre, authorizationStatus, isDataLoaded, onLogout, userLogin, userAvatar } = props;
   const history = useHistory();
   const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
   const condition = Boolean(!(cardsCount >= filmsBuffer.length) || isDataLoaded);
@@ -58,7 +55,16 @@ function MainPage(props: PropsFromRedux): JSX.Element {
   const onClick = () => history.push(`${AppRoute.Player}/${idPromo}`);
   const onListButtonClick = (evt: MouseEvent<HTMLButtonElement>) => {
     evt.preventDefault();
-    (store.dispatch as ThunkAppDispatch)(changeFavoritesAction(idPromo, !isFavoritePromo));
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      (store.dispatch as ThunkAppDispatch)(changeFavoritesAction(idPromo, !isFavoritePromo));
+    } else {
+      history.push(AppRoute.SignIn);
+    }
+  };
+  const onChangeGenre = (newGenre: string) => {
+    (store.dispatch as ThunkAppDispatch)(updateGenre(newGenre));
+    setCardsCount(FILM_RENDER_COUNT);
+    setShowButton(true);
   };
   const onShowMoreClick = () => {
     setCardsCount(cardsCount + FILM_RENDER_COUNT);
@@ -94,8 +100,8 @@ function MainPage(props: PropsFromRedux): JSX.Element {
 
           <ul className="user-block">
             <li className="user-block__item">
-              <div className="user-block__avatar" onClick={() => history.push(AppRoute.MyList)}>
-                <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
+              <div className="user-block__avatar" onClick={() => history.push(AppRoute.MyList)} style={authorizationStatus === AuthorizationStatus.Auth ? {} : {display : 'none'}}>
+                <img src={userAvatar} alt="User avatar" width="63" height="63" />
               </div>
             </li>
             <li className="user-block__item">

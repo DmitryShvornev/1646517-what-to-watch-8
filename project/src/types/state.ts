@@ -18,6 +18,8 @@ export type State = {
   isFavoritePromo: boolean;
   authorizationStatus: AuthorizationStatus;
   isDataLoaded: boolean;
+  isFilmLoaded: boolean,
   userLogin: string;
+  userAvatar: string;
   favoriteFilms: Film[],
 }

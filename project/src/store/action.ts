@@ -3,6 +3,7 @@ import { Film } from '../types/film';
 import { CommentReview } from '../types/comment';
 import { AuthorizationStatus } from '../const';
 
+
 export const changeList = (condition: boolean) : ChangeListAction => ({
   type: ActionType.ChangeList,
   payload: condition,
@@ -46,6 +47,11 @@ export const loadComments = (comments: CommentReview[]) : LoadCommentsAction => 
 export const requireAuthorization = (authStatus: AuthorizationStatus) => ({
   type: ActionType.RequireAuthorization,
   payload: authStatus,
+} as const);
+
+export const requireAvatar = (avatar: string) => ({
+  type: ActionType.RequireAvatar,
+  payload: avatar,
 } as const);
 
 export const requireLogin = (login: string) => ({

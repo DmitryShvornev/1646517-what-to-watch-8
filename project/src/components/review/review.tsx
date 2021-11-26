@@ -7,12 +7,13 @@ import { requireLogout } from '../../store/action';
 import { connect, ConnectedProps, useStore} from 'react-redux';
 import {fetchFilmAction} from '../../store/api-actions';
 import {ThunkAppDispatch} from '../../types/action';
-import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useParams, useHistory } from 'react-router-dom';
+import { useEffect, MouseEvent } from 'react';
 
-const mapStateToProps = ({userLogin, currentFilm}: State) => ({
+const mapStateToProps = ({userLogin, currentFilm, userAvatar}: State) => ({
   userLogin,
   currentFilm,
+  userAvatar,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
@@ -25,8 +26,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Review(props : PropsFromRedux): JSX.Element {
-  const {currentFilm, userLogin, onLogout} = props;
+  const {currentFilm, userLogin, onLogout, userAvatar} = props;
   const store = useStore();
+  const history = useHistory();
   // eslint-disable-next-line
   const {id} : any = useParams();
   useEffect(() => {
@@ -34,6 +36,10 @@ function Review(props : PropsFromRedux): JSX.Element {
   }, [id, store.dispatch]);
   const onAuthClick = () => {
     onLogout();
+  };
+  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
+    history.replace('/');
   };
   return (
     <section className="film-card film-card--full">
@@ -46,7 +52,7 @@ function Review(props : PropsFromRedux): JSX.Element {
 
         <header className="page-header">
           <div className="logo">
-            <a href="main.html" className="logo__link">
+            <a href="main.html" className="logo__link" onClick={onLogoClick}>
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>
@@ -67,7 +73,7 @@ function Review(props : PropsFromRedux): JSX.Element {
           <ul className="user-block">
             <li className="user-block__item">
               <div className="user-block__avatar">
-                <img src="img/avatar.jpg" alt="User avatar" width="63" height="63" />
+                <img src={userAvatar} alt="User avatar" width="63" height="63" />
               </div>
             </li>
             <li className="user-block__item">

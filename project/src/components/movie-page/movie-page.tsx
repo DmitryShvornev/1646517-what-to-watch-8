@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useHistory, useParams } from 'react-router-dom';
 import { AppRoute, AuthorizationStatus } from '../../const';
 import { MouseEvent, useState, useEffect } from 'react';
@@ -16,11 +15,10 @@ import { Actions } from '../../types/action';
 const SIMILAR_COUNT = 4;
 
 
-const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userLogin, userAvatar, films}: State) => ({
+const mapStateToProps = ({currentFilm, similarFilms, authorizationStatus, userAvatar, films}: State) => ({
   currentFilm,
   similarFilms,
   authorizationStatus,
-  userLogin,
   userAvatar,
   films,
 });
@@ -34,10 +32,9 @@ const mapDispatchToProps = (dispatch: Dispatch<Actions>) => ({
 const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, userAvatar, onLogout, films}: PropsFromRedux): JSX.Element {
+function MoviePage({ currentFilm, similarFilms, authorizationStatus,  userAvatar, onLogout, films}: PropsFromRedux): JSX.Element {
   const store = useStore();
-  // eslint-disable-next-line
-  const {id} : any = useParams();
+  const { id } = useParams<{id?: string}>();
   useEffect(() => {
     (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
     (store.dispatch as ThunkAppDispatch)(fetchSimilarAction(Number(id)));
@@ -61,7 +58,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
     history.push(`${AppRoute.Player}/${currentFilm.id}`);
   };
   const [state, setState] = useState('Overview');
-  if (films.find((item) => item.id === Number(id)) === undefined && id !== -1) {
+  if (films.find((item) => item.id === Number(id)) === undefined && Number(id) !== -1) {
     return <NotFound/>;
   }
   const onOptionClick = (evt : MouseEvent<HTMLAnchorElement>) => {
@@ -69,7 +66,8 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
     const option = evt.currentTarget.getAttribute('data-option') || '';
     setState(option);
   };
-  const onAuthClick = () => {
+  const onAuthClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
     if (authorizationStatus === AuthorizationStatus.Auth) {
       onLogout();
     }
@@ -107,7 +105,7 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
                 </div>
               </li>
               <li className="user-block__item">
-                <a className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? `${userLogin}`:'Sign in'}</a>
+                <a href="blank.html" className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? 'Sign out':'Sign in'}</a>
               </li>
             </ul>
           </header>
@@ -150,13 +148,13 @@ function MoviePage({ currentFilm, similarFilms, authorizationStatus, userLogin, 
               <nav className="film-nav film-card__nav">
                 <ul className="film-nav__list">
                   <li className={`film-nav__item ${state === 'Overview' ? 'film-nav__item--active':''}`}>
-                    <a href="#" data-option="Overview" className="film-nav__link" onClick={onOptionClick}>Overview</a>
+                    <a href="blank.html" data-option="Overview" className="film-nav__link" onClick={onOptionClick}>Overview</a>
                   </li>
                   <li className={`film-nav__item ${state === 'Details' ? 'film-nav__item--active':''}`}>
-                    <a href="#" data-option="Details" className="film-nav__link" onClick={onOptionClick}>Details</a>
+                    <a href="blank.html" data-option="Details" className="film-nav__link" onClick={onOptionClick}>Details</a>
                   </li>
                   <li className={`film-nav__item ${state === 'Reviews' ? 'film-nav__item--active':''}`}>
-                    <a href="#" data-option="Reviews" className="film-nav__link" onClick={onOptionClick}>Reviews</a>
+                    <a href="blank.html" data-option="Reviews" className="film-nav__link" onClick={onOptionClick}>Reviews</a>
                   </li>
                 </ul>
               </nav>

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState, MouseEvent } from 'react';
 import FilmsList from '../films-list/films-list';
 import GenreList from '../genre-list/genre-list';
@@ -12,8 +11,7 @@ import { updateGenre, requireLogout } from '../../store/action';
 import ShowMoreButton from '../show-more-button/show-more-button';
 import { changeFavoritesAction, fetchPromoAction } from '../../store/api-actions';
 
-
-const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer, authorizationStatus, isDataLoaded, userLogin, posterPromo, backgroundPromo, idPromo, isFavoritePromo, userAvatar}: State) => ({
+const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, filmsBuffer, authorizationStatus, isDataLoaded, posterPromo, backgroundPromo, idPromo, isFavoritePromo, userAvatar}: State) => ({
   genre,
   films,
   filmsBuffer,
@@ -26,7 +24,6 @@ const mapStateToProps = ({genre, films, titlePromo, yearPromo, genrePromo, films
   backgroundPromo,
   authorizationStatus,
   isDataLoaded,
-  userLogin,
   userAvatar,
 });
 
@@ -42,11 +39,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 
 function MainPage(props: PropsFromRedux): JSX.Element {
-  const { idPromo, isFavoritePromo, titlePromo, genrePromo, yearPromo, posterPromo, backgroundPromo, films, filmsBuffer, genre, authorizationStatus, isDataLoaded, onLogout, userLogin, userAvatar } = props;
+  const { idPromo, isFavoritePromo, titlePromo, genrePromo, yearPromo, posterPromo, backgroundPromo, films, filmsBuffer, genre, authorizationStatus, isDataLoaded, onLogout,  userAvatar } = props;
   const history = useHistory();
   const [cardsCount, setCardsCount] = useState(FILM_RENDER_COUNT);
   const condition = Boolean(!(cardsCount >= filmsBuffer.length) || isDataLoaded);
-  const username = isDataLoaded? `${userLogin}` : 'Sign out';
   const [showButton, setShowButton] = useState(condition);
   const store = useStore();
   useEffect(() => {
@@ -72,13 +68,17 @@ function MainPage(props: PropsFromRedux): JSX.Element {
       setShowButton(false);
     }
   };
-  const onAuthClick = () => {
+  const onAuthClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
     if (authorizationStatus === AuthorizationStatus.Auth) {
       onLogout();
     }
     else {
       history.push(AppRoute.SignIn);
     }
+  };
+  const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
   };
   return (
     <React.Fragment>
@@ -91,7 +91,7 @@ function MainPage(props: PropsFromRedux): JSX.Element {
 
         <header className="page-header film-card__head">
           <div className="logo">
-            <a className="logo__link">
+            <a className="logo__link" href="blank.html" onClick={onLogoClick}>
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>
@@ -105,7 +105,7 @@ function MainPage(props: PropsFromRedux): JSX.Element {
               </div>
             </li>
             <li className="user-block__item">
-              <a className="user-block__link" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? `${username}`:'Sign in'}</a>
+              <a className="user-block__link" href="blank.html" onClick={onAuthClick}>{authorizationStatus === AuthorizationStatus.Auth ? 'Sign out':'Sign in'}</a>
             </li>
           </ul>
         </header>
@@ -151,7 +151,7 @@ function MainPage(props: PropsFromRedux): JSX.Element {
         </section>
         <footer className="page-footer">
           <div className="logo">
-            <a className="logo__link logo__link--light">
+            <a className="logo__link logo__link--light" href="blank.html" onClick={onLogoClick}>
               <span className="logo__letter logo__letter--1">W</span>
               <span className="logo__letter logo__letter--2">T</span>
               <span className="logo__letter logo__letter--3">W</span>

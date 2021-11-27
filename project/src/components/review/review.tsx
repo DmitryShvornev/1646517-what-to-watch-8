@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import CommentForm from '../comment-form/comment-form';
 import {State} from '../../types/state';
 import { Dispatch } from 'redux';
@@ -10,8 +9,7 @@ import {ThunkAppDispatch} from '../../types/action';
 import { useParams, useHistory } from 'react-router-dom';
 import { useEffect, MouseEvent } from 'react';
 
-const mapStateToProps = ({userLogin, currentFilm, userAvatar}: State) => ({
-  userLogin,
+const mapStateToProps = ({currentFilm, userAvatar}: State) => ({
   currentFilm,
   userAvatar,
 });
@@ -26,16 +24,19 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function Review(props : PropsFromRedux): JSX.Element {
-  const {currentFilm, userLogin, onLogout, userAvatar} = props;
+  const {currentFilm, onLogout, userAvatar} = props;
   const store = useStore();
   const history = useHistory();
-  // eslint-disable-next-line
-  const {id} : any = useParams();
+  const { id } = useParams<{id?: string}>();
   useEffect(() => {
     (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
   }, [id, store.dispatch]);
-  const onAuthClick = () => {
+  const onAuthClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
     onLogout();
+  };
+  const onBreadCrumbsClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
   };
   const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
@@ -65,7 +66,7 @@ function Review(props : PropsFromRedux): JSX.Element {
                 <a href="film-page.html" className="breadcrumbs__link">{currentFilm.name}</a>
               </li>
               <li className="breadcrumbs__item">
-                <a className="breadcrumbs__link">Add review</a>
+                <a href="blank.html" className="breadcrumbs__link" onClick={onBreadCrumbsClick}>Add review</a>
               </li>
             </ul>
           </nav>
@@ -77,7 +78,7 @@ function Review(props : PropsFromRedux): JSX.Element {
               </div>
             </li>
             <li className="user-block__item">
-              <a className="user-block__link" onClick={onAuthClick}>{userLogin}</a>
+              <a href="blank.html" className="user-block__link" onClick={onAuthClick}>Sign out</a>
             </li>
           </ul>
         </header>

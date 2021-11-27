@@ -11,7 +11,6 @@ export enum ActionType {
   LoadFilm = 'data/loadFilm',
   RequireAuthorization = 'user/requireAuthorization',
   RequireLogout = 'user/requireLogout',
-  RequireLogin = 'user/reqireLogin',
   RequireAvatar = 'user/reqireAvatar',
   LoadSimilar = 'data/loadSimilar',
   LoadComments = 'data/loadComments',
@@ -64,11 +63,6 @@ export type RequireLogoutAction = {
   type: ActionType.RequireLogout;
 }
 
-export type RequireLoginAction = {
-  type: ActionType.RequireLogin;
-  payload: string;
-}
-
 export type RequireAvatarAction = {
   type: ActionType.RequireAvatar;
   payload: string;
@@ -80,6 +74,6 @@ export type LoadCommentsAction = {
 }
 
 
-export type Actions = UpdateGenreAction | LoadFilmsAction | RequireAuthorizationAction | RequireLogoutAction | RequireLoginAction | RequireAvatarAction | LoadFilmAction | LoadSimilarAction | LoadCommentsAction | ChangeListAction | LoadFavoritesAction | LoadPromoAction;
+export type Actions = UpdateGenreAction | LoadFilmsAction | RequireAuthorizationAction | RequireLogoutAction |  RequireAvatarAction | LoadFilmAction | LoadSimilarAction | LoadCommentsAction | ChangeListAction | LoadFavoritesAction | LoadPromoAction;
 export type ThunkActionResult<R = Promise<void>> = ThunkAction<R, State, AxiosInstance, Actions>;
 export type ThunkAppDispatch = ThunkDispatch<State, AxiosInstance, Actions>;

@@ -1,5 +1,5 @@
 import { ThunkActionResult } from '../types/action';
-import { loadFilms, requireAuthorization, requireLogout, requireLogin, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo, requireAvatar } from './action';
+import { loadFilms, requireAuthorization, requireLogout, loadFilm, loadSimilar, loadComments, changeList, loadFavorites, loadPromo, requireAvatar } from './action';
 import { saveToken, dropToken } from '../token';
 import { APIRoute, AuthorizationStatus } from '../const';
 import { Film } from '../types/film';
@@ -13,8 +13,7 @@ const AUTH_FAIL_MESSAGE = 'Не забудьте авторизоваться';
 const SEND_FAIL_MESSAGE = 'Не удалось отправить комментарий';
 const ACTION_FAIL_MESSAGE = 'Сервер недоступен';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function adaptToClient(film: any) {
+function adaptToClient(film: Film & Record<string, unknown>) {
   const adaptedFilm = Object.assign(
     {},
     film,
@@ -90,7 +89,6 @@ export const checkAuthAction = (): ThunkActionResult =>
   async (dispatch, _getState, api) => {
     try {
       await api.get(APIRoute.Login).then((response) => {
-        dispatch(requireLogin(response.data.email));
         dispatch(requireAvatar(response.data['avatar_url']));
       });
       dispatch(requireAuthorization(AuthorizationStatus.Auth));
@@ -105,7 +103,6 @@ export const loginAction = ({ login: email, password }: AuthData, callback : () 
       .then((response) => {
         saveToken(response.data.token);
         dispatch(requireAuthorization(AuthorizationStatus.Auth));
-        dispatch(requireLogin(response.data.email));
         dispatch(requireAvatar(response.data['avatar_url']));
         callback();
       }).catch(() => {

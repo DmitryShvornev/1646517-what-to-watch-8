@@ -19,7 +19,6 @@ export type State = {
   authorizationStatus: AuthorizationStatus;
   isDataLoaded: boolean;
   isFilmLoaded: boolean,
-  userLogin: string;
   userAvatar: string;
   favoriteFilms: Film[],
 }

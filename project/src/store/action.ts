@@ -54,10 +54,6 @@ export const requireAvatar = (avatar: string) => ({
   payload: avatar,
 } as const);
 
-export const requireLogin = (login: string) => ({
-  type: ActionType.RequireLogin,
-  payload: login,
-} as const);
 
 export const requireLogout = () => ({
   type: ActionType.RequireLogout,

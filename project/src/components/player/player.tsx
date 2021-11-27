@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState, useEffect, useCallback } from 'react';
+import { MouseEvent, useRef, useState, useEffect, useCallback, SyntheticEvent } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { fetchFilmAction } from '../../store/api-actions';
 import { ThunkAppDispatch } from '../../types/action';
@@ -12,6 +12,10 @@ const mapStateToProps = ({ currentFilm, isFilmLoaded }: State) => ({
 });
 
 const PROGRESS_MULTIPLIER = 100;
+const RADIX = 10;
+const TIME_LIMIT = 10;
+const SECONDS_PER_HOUR = 3600;
+const SECONDS_PER_MINUTE = 60;
 
 const connector = connect(mapStateToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -19,31 +23,30 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function Player(props: PropsFromRedux): JSX.Element {
   const { currentFilm, isFilmLoaded } = props;
   const store = useStore();
-  // eslint-disable-next-line
-  const { id }: any = useParams();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const { id } = useParams<{id?: string}>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const buttonRef = useCallback((node) => {
-    if (node !== null) {
+    if (node !== null && videoRef.current !== null) {
       node.click();
     }
   }, []);
   const [playing, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [time, setTime] = useState(0);
+
   useEffect(() => {
     (store.dispatch as ThunkAppDispatch)(fetchFilmAction(Number(id)));
   }, [id, store.dispatch]);
   const history = useHistory();
-  // eslint-disable-next-line
-  const handleProgress = (evt: any) => {
-    if (isNaN(Number(evt.target?.duration))) {
-      return;
-    }
-    const duration = Number(evt.target?.duration);
-    const currentTime = Number(evt.target?.currentTime);
+
+  const handleTimeUpdate = (evt: SyntheticEvent<HTMLMediaElement>) => {
+    const target = evt.currentTarget as HTMLMediaElement;
+    const duration = target.duration;
+    const currentTime = target.currentTime;
     setProgress((currentTime / duration) * PROGRESS_MULTIPLIER);
     setTime(duration - currentTime);
   };
+
   if (!isFilmLoaded) {
     return <LoadingScreen />;
   }
@@ -75,25 +78,25 @@ function Player(props: PropsFromRedux): JSX.Element {
     videoRef.current?.requestFullscreen();
   };
   const convertTime = (totalSeconds: string): string => {
-    const secondsNumber = parseInt(totalSeconds, 10);
-    const hours = Math.floor(secondsNumber / 3600);
-    const minutes = Math.floor(secondsNumber / 60) % 60;
-    const seconds = secondsNumber % 60;
+    const secondsNumber = parseInt(totalSeconds, RADIX);
+    const hours = Math.floor(secondsNumber / SECONDS_PER_HOUR);
+    const minutes = Math.floor(secondsNumber / SECONDS_PER_MINUTE) % SECONDS_PER_MINUTE;
+    const seconds = secondsNumber % SECONDS_PER_MINUTE;
     if (hours === 0) {
       return [minutes, seconds]
-        .map((number) => number < 10 ? `0${number}` : number)
+        .map((number) => number < TIME_LIMIT ? `0${number}` : number)
         .filter((number, i) => number !== '0' || i > 0)
         .join(':');
     } else {
       return [hours, minutes, seconds]
-        .map((number) => number < 10 ? `0${number}` : number)
+        .map((number) => number < TIME_LIMIT ? `0${number}` : number)
         .filter((number, i) => number !== '0' || i > 0)
         .join(':');
     }
   };
   return (
     <div className="player">
-      <video src={currentFilm.videoLink} className="player__video" poster={currentFilm.posterImage} ref={videoRef} onProgress={handleProgress}></video>
+      <video src={currentFilm.videoLink} className="player__video" poster="img/spinner.gif" ref={videoRef} onTimeUpdate={handleTimeUpdate}></video>
 
       <button type="button" className="player__exit" onClick={onExitClick}>Exit</button>
 

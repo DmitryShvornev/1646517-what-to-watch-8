@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { Film } from '../../types/film';
 import { MouseEvent } from 'react';
 
@@ -18,11 +17,11 @@ function GenreList({ films, dispatcher, currentGenre }: Props): JSX.Element {
   return (
     <ul className="catalog__genres-list">
       <li className={`catalog__genres-item ${currentGenre === 'All genres' ? 'catalog__genres-item--active' : ''}`}>
-        <a href="#" className="catalog__genres-link" data-genre="All genres" onClick={onGenreClick}>All genres</a>
+        <a href="blank.html" className="catalog__genres-link" data-genre="All genres" onClick={onGenreClick}>All genres</a>
       </li>
       {genres.map((item) => (
         <li key={item} className={`catalog__genres-item ${currentGenre === item ? 'catalog__genres-item--active' : ''}`}>
-          <a href="#" className="catalog__genres-link" data-genre={item} onClick={onGenreClick}>{item}</a>
+          <a href="blank.html" className="catalog__genres-link" data-genre={item} onClick={onGenreClick}>{item}</a>
         </li>))}
     </ul>
   );

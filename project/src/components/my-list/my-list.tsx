@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import FilmsList from '../films-list/films-list';
 import {State} from '../../types/state';
 import { Dispatch } from 'redux';
@@ -11,8 +10,7 @@ import { useHistory } from 'react-router';
 import { fetchFavoritesAction } from '../../store/api-actions';
 
 
-const mapStateToProps = ({userLogin, favoriteFilms, authorizationStatus, userAvatar}: State) => ({
-  userLogin,
+const mapStateToProps = ({favoriteFilms, authorizationStatus, userAvatar}: State) => ({
   userAvatar,
   favoriteFilms,
   authorizationStatus,
@@ -28,15 +26,16 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function MyList(props : PropsFromRedux): JSX.Element {
-  const {favoriteFilms, onLogout, userLogin, userAvatar, authorizationStatus} = props;
+  const {favoriteFilms, onLogout, userAvatar, authorizationStatus} = props;
   const history = useHistory();
   const store = useStore();
-  const onAuthClick = () => {
+  const onAuthClick = (evt : MouseEvent<HTMLAnchorElement>) => {
+    evt.preventDefault();
     onLogout();
   };
   useEffect(() => {
     (store.dispatch as ThunkAppDispatch)(fetchFavoritesAction());
-  });
+  }, [store.dispatch]);
   const onLogoClick = (evt : MouseEvent<HTMLAnchorElement>) => {
     evt.preventDefault();
     history.replace('/');
@@ -61,7 +60,7 @@ function MyList(props : PropsFromRedux): JSX.Element {
             </div>
           </li>
           <li className="user-block__item">
-            <a className="user-block__link" onClick={onAuthClick}>{userLogin}</a>
+            <a href="blank.html" className="user-block__link" onClick={onAuthClick}>Sign out</a>
           </li>
         </ul>
       </header>

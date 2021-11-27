@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import { connect, ConnectedProps } from 'react-redux';
 import { Film } from '../../types/film';
 import {State} from '../../types/state';

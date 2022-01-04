@@ -8,4 +8,4 @@
 - формирование списка любимых фильмов
 - фильтрация по жанрам
 
-Stack: HTML, CSS, JS, ReactJS
+Stack: HTML, CSS, TS, ReactJS
